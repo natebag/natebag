@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BagOS v0.112 (alpha)</title>
+  <style>
+    :root {
+      /* Theme vars (override per theme) */
+      --bg-wallpaper: radial-gradient(1200px 800px at 20% 20%, #1b2a6b 0%, #0b0f2a 45%, #060812 100%);
+      --panel: rgba(30, 40, 80, 0.8);
+      --panel-strong: rgba(20, 24, 48, 0.9);
+      --panel-border: rgba(255,255,255,0.12);
+      --accent: #61b1ff; /* XP-ish blue */
+      --accent-2: #9fe870; /* lime */
+      --text: #eaf4ff;
+      --text-dim: #b9c9e6;
+      --shadow: rgba(0,0,0,0.5);
+      --taskbar: rgba(10, 14, 28, 0.8);
+      --taskbar-blur: blur(6px);
+      --start-btn: linear-gradient(#1a64d6, #114a9e);
+      --start-btn-text: #eaf4ff;
+      --start-glow: #61b1ff55;
+    }
+
+    /* Classic themes */
+    .theme-xp {
+      --bg-wallpaper: radial-gradient(1400px 900px at 30% 30%, #1d54b4 0%, #0b2a6b 45%, #08122f 100%), url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%221600%22 height=%21900%22><defs><radialGradient id=%22g%22><stop offset=%220%25%22 stop-color=%22%23ffffff15%22/><stop offset=%22100%25%22 stop-color=%22%2300000000%22/></radialGradient></defs><rect width=%22100%25%22 height=%22100%25%22 fill=%22url(%23g)%22/></svg>');
+      --accent: #4ea3ff; --accent-2: #9fe870; --taskbar: rgba(10, 24, 64, 0.8);
+      --start-btn: linear-gradient(#2f89ff, #1f5fcc);
+    }
+    .theme-95 {
+      --bg-wallpaper: linear-gradient(135deg, #9ea7b3 0%, #c7ced6 100%);
+      --panel: #d4d0c8;
+      --panel-strong: #c8c2b8;
+      --panel-border: #808080;
+      --accent: #000000;
+      --accent-2: #008080;
+      --text: #000; --text-dim: #222;
+      --taskbar: #c0c0c0;
+      --start-btn: linear-gradient(#e0e0e0, #bfbfbf);
+      --start-btn-text: #000;
+    }
+    .theme-seven {
+      --bg-wallpaper: radial-gradient(1000px 700px at 75% 25%, #0f3c5f 0%, #031626 55%, #01070d 100%);
+      --panel: rgba(18, 32, 48, 0.75);
+      --panel-strong: rgba(10, 20, 32, 0.85);
+      --panel-border: rgba(255,255,255,0.08);
+      --accent: #00c3ff; --accent-2: #00ffa3;
+      --taskbar: rgba(6, 12, 18, 0.7);
+      --start-btn: linear-gradient(#0c6fad, #063a66);
+    }
+    .theme-cube { /* GameCube purple */
+      --bg-wallpaper: radial-gradient(1200px 900px at 70% 30%, #3d2a7c 0%, #1a1142 60%, #08051a 100%);
+      --panel: rgba(37, 26, 84, 0.8);
+      --panel-strong: rgba(27, 18, 64, 0.9);
+      --accent: #a58aff; --accent-2: #ff8bf2;
+      --taskbar: rgba(18, 12, 42, 0.8);
+      --start-btn: linear-gradient(#5b45c9, #3a2a9b);
+    }
+    .theme-portal {
+      --bg-wallpaper: linear-gradient(160deg, #f2f2f2 0%, #e6e6e6 50%, #dcdcdc 100%);
+      --panel: rgba(245, 245, 245, 0.9);
+      --panel-strong: rgba(230, 230, 230, 0.95);
+      --panel-border: #bdbdbd;
+      --accent: #00a0ff; --accent-2: #ff6a00;
+      --text: #222; --text-dim: #444;
+      --taskbar: rgba(230, 230, 230, 0.85);
+      --start-btn: linear-gradient(#ffffff, #d9d9d9);
+      --start-btn-text: #111;
+    }
+    .theme-zombies {
+      --bg-wallpaper: radial-gradient(900px 600px at 60% 40%, #0a0a0a 0%, #020202 65%, #000000 100%),
+                       repeating-conic-gradient(from 0deg, #000 0 15deg, #020202 15deg 30deg);
+      --panel: rgba(16,16,16,0.85);
+      --panel-strong: rgba(6,6,6,0.95);
+      --panel-border: #1a1a1a;
+      --accent: #00ffcc; --accent-2: #ff4d4d;
+      --taskbar: rgba(4,4,4,0.9);
+      --start-btn: linear-gradient(#111, #000);
+      --start-btn-text: #eaeaea;
+    }
+    .theme-halo3 {
+      --bg-wallpaper: url('backgrounds/halo3.jpg');
+      --panel: rgba(20, 35, 60, 0.85);
+      --panel-strong: rgba(15, 25, 45, 0.95);
+      --panel-border: rgba(100, 150, 255, 0.3);
+      --accent: #00d4ff; --accent-2: #ff6a00;
+      --text: #e8f4ff; --text-dim: #b8d4ff;
+      --taskbar: rgba(10, 20, 40, 0.85);
+      --start-btn: linear-gradient(#0066cc, #003d7a);
+      --start-btn-text: #ffffff;
+    }
+    .theme-cod-zombies {
+      --bg-wallpaper: url('backgrounds/NaZiZombs.jpg');
+      --panel: rgba(20, 15, 10, 0.9);
+      --panel-strong: rgba(15, 10, 5, 0.95);
+      --panel-border: rgba(255, 150, 50, 0.4);
+      --accent: #ff6600; --accent-2: #ffcc00;
+      --text: #ffeecc; --text-dim: #ccaa88;
+      --taskbar: rgba(10, 8, 5, 0.9);
+      --start-btn: linear-gradient(#cc4400, #883300);
+      --start-btn-text: #ffeecc;
+    }
+    .theme-portal2 {
+      --bg-wallpaper: url('backgrounds/portal2.png');
+      --panel: rgba(240, 240, 245, 0.9);
+      --panel-strong: rgba(225, 225, 235, 0.95);
+      --panel-border: rgba(100, 150, 200, 0.5);
+      --accent: #0099ff; --accent-2: #ff6600;
+      --text: #2c3e50; --text-dim: #5a6c7d;
+      --taskbar: rgba(230, 230, 240, 0.9);
+      --start-btn: linear-gradient(#ffffff, #e0e6ed);
+      --start-btn-text: #2c3e50;
+    }
+
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Segoe UI, Tahoma, Verdana, "Trebuchet MS", system-ui, sans-serif;
+      color: var(--text);
+      background: var(--bg-wallpaper);
+      background-size: cover;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* Boot / Login */
+    .boot {
+      position: absolute; inset: 0; display: grid; place-items: center;
+      background: #000; color: #9fd2ff; font-size: 32px; letter-spacing: 4px;
+      animation: bootfade 2.6s ease-in forwards;
+    }
+    .boot .sub { font-size: 14px; color: #86bfff; opacity: 0.8; margin-top: 12px; }
+    .boot .dots::after { content: '·'; animation: dots 1.6s infinite steps(4);
+      display: inline-block; width: 1ch; text-align: left; }
+    @keyframes dots { 0%{content:'·'} 25%{content:'··'} 50%{content:'···'} 75%{content:'····'} 100%{content:'·'} }
+    @keyframes bootfade { 0%,70%{opacity:1} 100%{opacity:0; visibility:hidden} }
+
+    .desktop { position: absolute; inset: 0; padding: 28px; display: block; }
+
+    /* Desktop icons */
+    .icon-grid { position: relative; width: 100%; height: 100%; }
+    .icon { 
+      position: absolute; 
+      width: 110px; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      gap: 6px; 
+      cursor: move; 
+      user-select: none;
+      z-index: 1;
+    }
+    .icon.dragging { 
+      z-index: 1000; 
+      opacity: 0.8; 
+      transform: rotate(2deg);
+    }
+    .icon .glyph { font-size: 36px; filter: drop-shadow(0 4px 8px var(--shadow)); pointer-events: none; }
+    .icon .label { padding: 4px 8px; border-radius: 6px; background: transparent; color: var(--text); text-align:center; text-shadow: 0 1px 2px var(--shadow); pointer-events: none; }
+    .icon:active .label, .icon.selected .label { background: var(--panel); outline: 1px solid var(--panel-border); box-shadow: 0 0 0 2px var(--start-glow); }
+
+    /* Taskbar */
+    .taskbar { position: absolute; left:0; right:0; bottom:0; height: 44px; display:flex; align-items:center; padding: 4px 8px; gap: 8px; background: var(--taskbar); backdrop-filter: var(--taskbar-blur); box-shadow: 0 -2px 16px var(--shadow) inset; }
+    .start { display:flex; align-items:center; gap:8px; background: var(--start-btn); color: var(--start-btn-text); padding: 6px 12px; border-radius: 8px; border: 1px solid #00000033; box-shadow: 0 2px 0 #0004, 0 0 0 2px #ffffff15 inset; cursor: pointer; font-weight: 700; letter-spacing: 0.2px; }
+    .start:active { transform: translateY(1px); }
+    .task-list { display:flex; gap: 6px; align-items:center; flex:1; overflow-x:auto; }
+    .task { min-width: 140px; max-width: 220px; padding: 6px 10px; border-radius: 8px; background: var(--panel); color: var(--text-dim); border: 1px solid var(--panel-border); box-shadow: 0 1px 0 #fff1 inset; cursor: pointer; white-space: nowrap; text-overflow: ellipsis; overflow:hidden; }
+    .task.active { outline: 2px solid var(--accent); color: var(--text); }
+    .tray { display:flex; gap: 10px; align-items:center; }
+    .clock { min-width: 86px; text-align: right; opacity: 0.9; }
+    .tray-btn { width: 28px; height: 28px; display:grid; place-items:center; border-radius: 6px; background: var(--panel); border: 1px solid var(--panel-border); cursor: pointer; }
+
+    /* Mini Music Player */
+    .mini-player { position: absolute; bottom: 52px; right: 8px; width: 280px; background: var(--panel); border: 1px solid var(--panel-border); border-radius: 8px; box-shadow: 0 4px 12px var(--shadow); display: none; overflow: hidden; }
+    .mini-player.show { display: block; }
+    .mini-player.minimized { width: 200px; }
+    .mini-player .player-header { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; background: linear-gradient(180deg, #ffffff10, transparent); }
+    .mini-player .player-title { font-size: 12px; font-weight: bold; }
+    .mini-player .player-controls { display: flex; gap: 4px; }
+    .mini-player .player-btn { width: 20px; height: 18px; display: grid; place-items: center; border-radius: 4px; background: var(--panel-strong); border: 1px solid var(--panel-border); cursor: pointer; font-size: 10px; }
+    .mini-player .player-content { padding: 8px; }
+    .mini-player .song-info { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .mini-player .song-title { font-size: 11px; font-weight: bold; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mini-player .transport { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+    .mini-player .transport-btn { width: 24px; height: 20px; display: grid; place-items: center; border-radius: 4px; background: var(--panel-strong); border: 1px solid var(--panel-border); cursor: pointer; font-size: 12px; }
+    .mini-player .progress-bar { width: 100%; height: 4px; background: #00000033; border-radius: 2px; overflow: hidden; cursor: pointer; }
+    .mini-player .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.1s; }
+    .mini-player .playlist { max-height: 120px; overflow-y: auto; }
+    .mini-player .playlist-item { padding: 4px 6px; cursor: pointer; font-size: 11px; border-radius: 4px; margin-bottom: 2px; }
+    .mini-player .playlist-item:hover { background: #ffffff10; }
+    .mini-player .playlist-item.active { background: var(--accent); color: #fff; }
+    .mini-player .volume-control { display: flex; align-items: center; gap: 4px; margin-top: 4px; }
+    .mini-player .volume-slider { flex: 1; height: 4px; background: #00000033; border-radius: 2px; cursor: pointer; }
+    .mini-player .volume-fill { height: 100%; background: var(--accent-2); width: 70%; }
+
+    /* Start menu */
+    .menu { position: absolute; left: 8px; bottom: 52px; width: 320px; background: var(--panel-strong); border: 1px solid var(--panel-border); border-radius: 12px; box-shadow: 0 12px 28px var(--shadow); overflow:hidden; display:none; }
+    .menu.show { display:block; }
+    .menu-header { padding: 14px 16px; background: linear-gradient(180deg, var(--panel), transparent); border-bottom: 1px solid var(--panel-border); }
+    .menu-title { font-weight: 800; letter-spacing: 0.3px; }
+    .menu-list { padding: 6px; display:flex; flex-direction:column; }
+    .menu-item { display:flex; align-items:center; gap:10px; padding: 10px; border-radius: 8px; cursor: pointer; }
+    .menu-item:hover { background: linear-gradient(180deg, #ffffff10, transparent); outline: 1px solid var(--panel-border); }
+
+    /* Windows */
+    .window { position: absolute; min-width: 360px; min-height: 200px; background: var(--panel); border: 1px solid var(--panel-border); border-radius: 12px; box-shadow: 0 18px 40px var(--shadow); overflow: hidden; display:none; }
+    .window.show { display:block; }
+    .titlebar { display:flex; align-items:center; justify-content:space-between; padding: 8px 10px; background: linear-gradient(180deg, #ffffff18, #00000018); cursor: grab; }
+    .titlebar:active { cursor: grabbing; }
+    .titlebar .title { display:flex; align-items:center; gap:8px; font-weight: 700; letter-spacing: .2px; }
+    .window-controls { display:flex; gap:6px; }
+    .win-btn { width: 28px; height: 24px; display:grid; place-items:center; border-radius: 6px; background: var(--panel-strong); border: 1px solid var(--panel-border); cursor: pointer; }
+    .content { padding: 12px; height: calc(100% - 44px); overflow:auto; }
+    .maximize .content { height: calc(100vh - 44px - 16px); }
+
+    /* App specific */
+    .notepad textarea { width: 100%; height: 280px; background: #00000022; color: var(--text); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px; font-family: Consolas, monospace; }
+    .settings .row { display:flex; gap:8px; align-items:center; margin-bottom: 12px; }
+    .settings .theme-swatch { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--panel-border); box-shadow: 0 2px 6px var(--shadow) inset; cursor: pointer; }
+    .game-launcher .card { padding: 10px; border: 1px dashed var(--panel-border); border-radius: 10px; margin-bottom: 10px; }
+
+    /* Context menu */
+    .ctx { position: absolute; background: var(--panel-strong); border: 1px solid var(--panel-border); border-radius: 8px; box-shadow: 0 12px 26px var(--shadow); display:none; overflow:hidden; }
+    .ctx.show { display:block; }
+    .ctx .item { padding: 8px 12px; cursor: pointer; white-space: nowrap; }
+    .ctx .item:hover { background: #ffffff12; }
+
+    /* Helper */
+    .hidden { display:none !important; }
+
+    /* CRT Boot Sequence Styles */
+    .crt-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000000;
+      z-index: 9999;
+    }
+
+    .crt-screen::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.3) 100%),
+        linear-gradient(0deg, transparent 50%, rgba(0, 255, 0, 0.02) 50%);
+      background-size: 100% 100%, 100% 4px;
+      pointer-events: none;
+    }
+
+    .crt-screen::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 0, 0.05) 2px,
+        rgba(0, 255, 0, 0.05) 4px
+      );
+      animation: scanlines 0.1s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes scanlines {
+      0% { transform: translateY(0px); }
+      100% { transform: translateY(4px); }
+    }
+
+    .boot-terminal {
+      position: relative;
+      padding: 40px;
+      color: #00ff00;
+      font-size: 14px;
+      line-height: 1.2;
+      height: 100vh;
+      overflow: hidden;
+      background: radial-gradient(ellipse at center, rgba(0, 20, 0, 0.9) 0%, rgba(0, 10, 0, 0.95) 100%);
+      text-shadow: 0 0 5px currentColor;
+      animation: screenFlicker 0.15s ease-in-out infinite alternate;
+    }
+
+    @keyframes screenFlicker {
+      0% { opacity: 1; }
+      100% { opacity: 0.98; }
+    }
+
+    .boot-text {
+      filter: blur(0.5px);
+    }
+
+    .boot-line {
+      opacity: 0;
+      animation: typeLine 0.1s ease-in-out forwards;
+      margin-bottom: 2px;
+    }
+
+    .boot-line.error {
+      color: #ff3030;
+      text-shadow: 0 0 5px #ff3030;
+    }
+
+    .boot-line.warning {
+      color: #ffff30;
+      text-shadow: 0 0 5px #ffff30;
+    }
+
+    .boot-line.success {
+      color: #30ff30;
+      text-shadow: 0 0 5px #30ff30;
+    }
+
+    .boot-line.rainbow {
+      background: linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #80ff00, #00ff00, #00ff80, #00ffff, #0080ff, #0000ff, #8000ff, #ff00ff, #ff0080);
+      background-size: 400% 400%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: rainbowShift 2s ease infinite;
+      text-shadow: none;
+    }
+
+    .boot-line.glitch {
+      color: #ffff30;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-shadow: 0 0 8px #ffff30;
+    }
+
+    .ceo-text {
+      color: #00ff88;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+      letter-spacing: 4px;
+      text-shadow: 0 0 15px #00ff88;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    .logo-text {
+      color: #4da6ff;
+      font-size: 10px;
+      font-weight: bold;
+      text-align: center;
+      line-height: 1;
+      font-family: 'Courier New', monospace;
+      text-shadow: 0 0 15px #4da6ff, 0 0 25px #4da6ff;
+      animation: logoGlow 3s ease-in-out infinite alternate;
+      white-space: pre;
+      margin: 0;
+    }
+
+    .logo-text.crt-flicker {
+      animation: logoGlow 3s ease-in-out infinite alternate, crtFlicker 0.8s ease-in-out infinite;
+    }
+
+    .boot-cursor {
+      background: #00ff00;
+      animation: blink 1s infinite;
+      text-shadow: 0 0 5px #00ff00;
+    }
+
+    @keyframes typeLine {
+      to { opacity: 1; }
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    @keyframes rainbowShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes glow {
+      0% { 
+        text-shadow: 0 0 15px #00ff88, 0 0 25px #00ff88;
+        transform: scale(1);
+      }
+      100% { 
+        text-shadow: 0 0 20px #00ff88, 0 0 35px #00ff88, 0 0 45px #00ff88;
+        transform: scale(1.02);
+      }
+    }
+
+    @keyframes logoGlow {
+      0% { 
+        text-shadow: 0 0 15px #4da6ff, 0 0 25px #4da6ff;
+        opacity: 0.9;
+      }
+      100% { 
+        text-shadow: 0 0 25px #4da6ff, 0 0 40px #4da6ff, 0 0 55px #4da6ff;
+        opacity: 1;
+      }
+    }
+
+    @keyframes crtFlicker {
+      0% { 
+        opacity: 1;
+        transform: scaleX(1) scaleY(1);
+        filter: brightness(1) contrast(1);
+      }
+      2% { 
+        opacity: 0.8;
+        transform: scaleX(0.99) scaleY(1.02);
+        filter: brightness(1.1) contrast(1.2);
+      }
+      4% { 
+        opacity: 1;
+        transform: scaleX(1.01) scaleY(0.98);
+        filter: brightness(0.9) contrast(1.1);
+      }
+      6% { 
+        opacity: 0.9;
+        transform: scaleX(1) scaleY(1.01);
+        filter: brightness(1.2) contrast(0.9);
+      }
+      8% { 
+        opacity: 1;
+        transform: scaleX(1) scaleY(1);
+        filter: brightness(1) contrast(1);
+      }
+      92% { 
+        opacity: 1;
+        transform: scaleX(1) scaleY(1);
+        filter: brightness(1) contrast(1);
+      }
+      94% { 
+        opacity: 0.7;
+        transform: scaleX(0.98) scaleY(1.03);
+        filter: brightness(1.3) contrast(1.3);
+      }
+      96% { 
+        opacity: 1;
+        transform: scaleX(1.02) scaleY(0.97);
+        filter: brightness(0.8) contrast(1.2);
+      }
+      98% { 
+        opacity: 0.85;
+        transform: scaleX(1) scaleY(1.02);
+        filter: brightness(1.1) contrast(0.8);
+      }
+      100% { 
+        opacity: 1;
+        transform: scaleX(1) scaleY(1);
+        filter: brightness(1) contrast(1);
+      }
+    }
+
+    .crt-screen.powering-on {
+      animation: powerOn 1s ease-out forwards;
+    }
+
+    @keyframes powerOn {
+      0% {
+        opacity: 0;
+        transform: scale(1, 0.001);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1, 0.001);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1, 1);
+      }
+    }
+
+    .static-noise {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      opacity: 0.03;
+      background-image: repeating-conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(255,255,255,1) 1deg, transparent 2deg);
+      background-size: 3px 3px;
+      animation: staticNoise 0.1s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes staticNoise {
+      0% { transform: translate(0px, 0px); }
+      25% { transform: translate(1px, -1px); }
+      50% { transform: translate(-1px, 1px); }
+      75% { transform: translate(1px, 1px); }
+      100% { transform: translate(-1px, -1px); }
+    }
+  </style>
+</head>
+<body class="theme-xp">
+  <!-- CRT Boot Sequence -->
+  <div class="crt-screen powering-on" id="crtScreen">
+    <div class="static-noise"></div>
+    <div class="boot-terminal">
+      <div class="boot-text" id="bootText"></div>
+      <span class="boot-cursor" id="bootCursor">_</span>
+    </div>
+  </div>
+
+  <!-- Desktop (hidden during boot) -->
+  <div class="desktop" id="desktop" style="display: none;">
+    <div class="icon-grid" id="iconGrid">
+      <div class="icon" data-open="mybag" style="left: 20px; top: 20px;">
+        <div class="glyph">🗂️</div>
+        <div class="label">My Bag</div>
+      </div>
+      <div class="icon" data-open="games" style="left: 150px; top: 20px;">
+        <div class="glyph">🎮</div>
+        <div class="label">Games</div>
+      </div>
+      <div class="icon" data-open="notepad" style="left: 280px; top: 20px;">
+        <div class="glyph">📝</div>
+        <div class="label">Notepad</div>
+      </div>
+      <div class="icon" data-open="settings" style="left: 410px; top: 20px;">
+        <div class="glyph">⚙️</div>
+        <div class="label">Settings</div>
+      </div>
+      <div class="icon" data-open="about" style="left: 20px; top: 150px;">
+        <div class="glyph">💠</div>
+        <div class="label">About</div>
+      </div>
+      <div class="icon" data-open="recycle" style="left: 150px; top: 150px;">
+        <div class="glyph">🗑️</div>
+        <div class="label">Recycle Bin</div>
+      </div>
+      <div class="icon" data-open="natebag" style="left: 280px; top: 150px;">
+        <div class="glyph"><img src="pics/logo/Natebag.jpg" style="width:36px;height:36px;border-radius:4px;" alt="NB"></div>
+        <div class="label">Natebag</div>
+      </div>
+      <div class="icon" data-open="bagbros" style="left: 410px; top: 150px;">
+        <div class="glyph"><img src="pics/logo/TheBagBros.jpg" style="width:36px;height:36px;border-radius:4px;" alt="BB"></div>
+        <div class="label">TheBagBros</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Taskbar (hidden during boot) -->
+  <div class="taskbar" id="taskbar" style="display: none;">
+    <div class="start" id="startBtn">🟩 Bag</div>
+    <div class="task-list" id="taskList"></div>
+    <div class="tray">
+      <div class="tray-btn" id="musicToggle" title="System hum on/off">🎵</div>
+      <div class="tray-btn" id="themeCycle" title="Cycle theme">🎨</div>
+      <div class="clock" id="clock">--:--</div>
+    </div>
+  </div>
+
+  <!-- Start Menu (hidden during boot) -->
+  <div class="menu" id="startMenu" style="display: none;">
+    <div class="menu-header">
+      <div class="menu-title">Welcome, <strong>Nate</strong></div>
+      <div style="font-size:12px; opacity:.7">BagOS v0.112 (alpha)</div>
+    </div>
+    <div class="menu-list">
+      <div class="menu-item" data-open="notepad">📝 Notepad</div>
+      <div class="menu-item" data-open="games">🎮 Game Launcher</div>
+      <div class="menu-item" data-open="mybag">🗂️ My Bag</div>
+      <div class="menu-item" data-open="settings">⚙️ Settings</div>
+      <div class="menu-item" data-open="about">💠 About</div>
+      <div class="menu-item" data-open="natebag">🎆 Natebag</div>
+      <div class="menu-item" data-open="bagbros">🔗 TheBagBros</div>
+      <div class="menu-item" id="shutdown">⏻ Shut Down</div>
+    </div>
+  </div>
+
+  <!-- Windows / Apps -->
+
+  <div class="window notepad" id="window-notepad" style="left: 140px; top: 140px; width: 520px;">
+    <div class="titlebar">
+      <div class="title">📝 Notepad</div>
+      <div class="window-controls">
+        <div class="win-btn" data-action="min">—</div>
+        <div class="win-btn" data-action="max">▢</div>
+        <div class="win-btn" data-action="close">✕</div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="row" style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+        <input id="noteTitle" placeholder="untitled.txt" style="flex:1; padding:6px 8px; border-radius:6px; border:1px solid var(--panel-border); background:#00000022; color:var(--text)">
+        <button id="saveNote" style="padding:6px 10px; border-radius:6px; border:1px solid var(--panel-border); background:var(--panel-strong); color:var(--text)">Save</button>
+      </div>
+      <textarea id="noteArea" placeholder=":) Start typing..."></textarea>
+    </div>
+  </div>
+
+  <div class="window settings" id="window-settings" style="left: 360px; top: 260px; width: 460px;">
+    <div class="titlebar">
+      <div class="title">⚙️ Settings</div>
+      <div class="window-controls">
+        <div class="win-btn" data-action="min">—</div>
+        <div class="win-btn" data-action="max">▢</div>
+        <div class="win-btn" data-action="close">✕</div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="row"><strong>Theme</strong></div>
+      <div class="row">
+        <div class="theme-swatch" data-theme="theme-xp" title="XP" style="background:#1d54b4"></div>
+        <div class="theme-swatch" data-theme="theme-95" title="95" style="background:#c0c0c0"></div>
+        <div class="theme-swatch" data-theme="theme-seven" title="7" style="background:#0f3c5f"></div>
+        <div class="theme-swatch" data-theme="theme-cube" title="GameCube" style="background:#3d2a7c"></div>
+        <div class="theme-swatch" data-theme="theme-portal" title="Portal" style="background:#f2f2f2"></div>
+        <div class="theme-swatch" data-theme="theme-zombies" title="Zombies" style="background:#0a0a0a"></div>
+      </div>
+      <div class="row">
+        <div class="theme-swatch" data-theme="theme-halo3" title="Halo 3" style="background:#0066cc"></div>
+        <div class="theme-swatch" data-theme="theme-cod-zombies" title="CoD Zombies" style="background:#cc4400"></div>
+        <div class="theme-swatch" data-theme="theme-portal2" title="Portal 2" style="background:#ffffff"></div>
+      </div>
+      <div class="row"><small>Tip: Click the 🎨 tray icon to cycle quickly.</small></div>
+      <hr style="border:none; border-top:1px solid var(--panel-border); margin:12px 0;">
+      <div class="row"><strong>Audio</strong></div>
+      <div class="row">System hum: <button id="humOnOff">Toggle</button></div>
+      <div class="row"><small>Drag an audio file onto the desktop to play it in the Music app (auto‑opens).</small></div>
+    </div>
+  </div>
+
+  <div class="window game-launcher" id="window-games" style="left: 760px; top: 220px; width: 520px;">
+    <div class="titlebar">
+      <div class="title">🎮 Game Launcher</div>
+      <div class="window-controls">
+        <div class="win-btn" data-action="min">—</div>
+        <div class="win-btn" data-action="max">▢</div>
+        <div class="win-btn" data-action="close">✕</div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="card">
+        <strong>Flash (SWF) support</strong><br>
+        Drop-in planned via <em>Ruffle</em> (safe Flash emulator). We can bundle it so your classic SWF games run locally.
+      </div>
+      <div class="card">
+        <strong>Emulators</strong><br>
+        We can add JS emulators (NES/SNES/GB/etc.). ROMs must be homebrew or provided by the user. UI here will let players load a file.
+      </div>
+      <div class="card">
+        <strong>Shortcuts</strong>
+        <ul>
+          <li>Portal Test Chamber (theme toggle)</li>
+          <li>Zombies Mode (enable dark neon overlay)</li>
+          <li>Mario Kart Tile Shuffle (icon animation)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="window" id="window-mybag" style="left: 200px; top: 80px; width: 520px;">
+    <div class="titlebar">
+      <div class="title">🗂️ My Bag</div>
+      <div class="window-controls">
+        <div class="win-btn" data-action="min">—</div>
+        <div class="win-btn" data-action="max">▢</div>
+        <div class="win-btn" data-action="close">✕</div>
+      </div>
+    </div>
+    <div class="content">
+      <p>This is your file hub. We can wire this to real content later (projects, screenshots, music, etc.).</p>
+      <ul>
+        <li>Saved notes will appear here (coming soon).</li>
+        <li>Drag & drop files onto desktop to preview (music opens player).</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="window" id="window-about" style="left: 820px; top: 80px; width: 360px;">
+    <div class="titlebar">
+      <div class="title">💠 About BagOS</div>
+      <div class="window-controls">
+        <div class="win-btn" data-action="min">—</div>
+        <div class="win-btn" data-action="max">▢</div>
+        <div class="win-btn" data-action="close">✕</div>
+      </div>
+    </div>
+    <div class="content">
+      <p><strong>BagOS</strong> v0.112 (alpha)</p>
+      <p>Inspired by Windows 95/XP/7 with vibes from GameCube, Portal, and BO1 Zombies.</p>
+      <p>Easter egg ready. Themes saved to localStorage.</p>
+    </div>
+  </div>
+
+  <div class="window" id="window-music" style="left: 80px; top: 340px; width: 420px;">
+    <div class="titlebar">
+      <div class="title">🎵 Music Player</div>
+      <div class="window-controls">
+        <div class="win-btn" data-action="min">—</div>
+        <div class="win-btn" data-action="max">▢</div>
+        <div class="win-btn" data-action="close">✕</div>
+      </div>
+    </div>
+    <div class="content">
+      <p>Drop an <em>audio file</em> onto the desktop to play. (mp3/wav/ogg)</p>
+      <audio id="audio" controls style="width:100%"></audio>
+    </div>
+  </div>
+
+  <div class="window" id="window-natebag" style="left: 200px; top: 200px; width: 480px;">
+    <div class="titlebar">
+      <div class="title">🎆 Natebag - Personal Portfolio</div>
+      <div class="window-controls">
+        <div class="win-btn" data-action="min">—</div>
+        <div class="win-btn" data-action="max">▢</div>
+        <div class="win-btn" data-action="close">✕</div>
+      </div>
+    </div>
+    <div class="content">
+      <div style="text-align:center; margin-bottom:20px;">
+        <img src="pics/logo/Natebag.jpg" style="width:80px;height:80px;border-radius:8px;box-shadow:0 4px 8px var(--shadow);" alt="Natebag">
+        <h3 style="margin:10px 0; color:var(--accent);">Natebag CEO</h3>
+      </div>
+      <p><strong>Welcome to Natebag's digital space!</strong></p>
+      <ul>
+        <li>🎮 Gaming content creator</li>
+        <li>💰 Crypto enthusiast & trader</li>
+        <li>🚀 CEO mindset, always chasing bags</li>
+        <li>🎵 Music producer & beats creator</li>
+      </ul>
+      <p>This is where the magic happens - from hitting clips to making beats, it's all about that grind!</p>
+      <div style="margin-top:20px; text-align:center;">
+        <button onclick="alert('Coming soon: Direct link to Natebag socials!')" style="padding:8px 16px; border-radius:6px; background:var(--accent); color:#fff; border:none; cursor:pointer;">Connect 🔗</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="window" id="window-bagbros" style="left: 300px; top: 150px; width: 560px; height: 480px;">
+    <div class="titlebar">
+      <div class="title">🔗 TheBagBros.com</div>
+      <div class="window-controls">
+        <div class="win-btn" data-action="min">—</div>
+        <div class="win-btn" data-action="max">▢</div>
+        <div class="win-btn" data-action="close">✕</div>
+      </div>
+    </div>
+    <div class="content" style="padding:0; height:calc(100% - 44px);">
+      <div style="padding:10px; background:var(--panel-strong); border-bottom:1px solid var(--panel-border); display:flex; align-items:center; gap:8px;">
+        <div style="background:#ff4444; width:12px; height:12px; border-radius:50%;"></div>
+        <div style="background:#ffaa44; width:12px; height:12px; border-radius:50%;"></div>
+        <div style="background:#44ff44; width:12px; height:12px; border-radius:50%;"></div>
+        <div style="flex:1; background:#00000022; padding:4px 8px; border-radius:4px; font-size:12px; font-family:monospace;">🌐 https://TheBagBros.com</div>
+        <button id="loadBagBros" style="padding:4px 8px; border-radius:4px; background:var(--accent); color:#fff; border:none; cursor:pointer; font-size:12px;">↻</button>
+      </div>
+      <iframe id="bagbrosFrame" style="width:100%; height:calc(100% - 42px); border:none; background:#fff;" src="https://thebagbros.com">
+        <p style="padding:20px; text-align:center;">Loading TheBagBros.com...</p>
+      </iframe>
+    </div>
+  </div>
+
+  <!-- Context Menu -->
+  <div class="ctx" id="ctx">
+    <div class="item" data-open="notepad">New Note</div>
+    <div class="item" data-open="natebag">Open Natebag</div>
+    <div class="item" data-open="bagbros">Visit TheBagBros</div>
+    <div class="item" data-open="settings">Change Theme</div>
+    <div class="item" id="refresh">Refresh</div>
+  </div>
+
+  <!-- Mini Music Player -->
+  <div class="mini-player" id="miniPlayer">
+    <div class="player-header">
+      <div class="player-title">🎵 Music Player</div>
+      <div class="player-controls">
+        <div class="player-btn" id="playerMinimize" title="Minimize">—</div>
+        <div class="player-btn" id="playerClose" title="Close">✕</div>
+      </div>
+    </div>
+    <div class="player-content" id="playerContent">
+      <div class="song-info">
+        <div class="song-title" id="currentSong">No song loaded</div>
+      </div>
+      <div class="transport">
+        <div class="transport-btn" id="prevBtn">⏮</div>
+        <div class="transport-btn" id="playBtn">▶</div>
+        <div class="transport-btn" id="nextBtn">⏭</div>
+        <div class="progress-bar" id="progressBar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+      <div class="volume-control">
+        <span style="font-size:10px">🔊</span>
+        <div class="volume-slider" id="volumeSlider">
+          <div class="volume-fill" id="volumeFill"></div>
+        </div>
+      </div>
+      <div class="playlist" id="playlist">
+        <!-- Songs will be populated here -->
+      </div>
+    </div>
+    <audio id="miniAudio" preload="metadata"></audio>
+  </div>
+
+  <script src="config/api-config.js"></script>
+  <script>
+    const body = document.body;
+    const desktop = document.getElementById('desktop');
+    const startBtn = document.getElementById('startBtn');
+    const startMenu = document.getElementById('startMenu');
+    const taskList = document.getElementById('taskList');
+    const ctx = document.getElementById('ctx');
+    const musicToggle = document.getElementById('musicToggle');
+    const themeCycle = document.getElementById('themeCycle');
+
+    // CRT Boot Sequence Integration
+    const crtScreen = document.getElementById('crtScreen');
+    const bootText = document.getElementById('bootText');
+    const bootCursor = document.getElementById('bootCursor');
+    const taskbar = document.getElementById('taskbar');
+
+    function hideBoot(){ 
+      crtScreen.style.opacity = '0';
+      crtScreen.style.transition = 'opacity 0.5s ease-out';
+      setTimeout(() => {
+        crtScreen.style.display = 'none';
+        // Show OS elements after boot completes
+        desktop.style.display = 'block';
+        taskbar.style.display = 'flex';
+        startMenu.style.display = 'none'; // Keep menu hidden initially
+        // Initialize OS functionality
+        initializeBagOS();
+      }, 500);
+    }
+
+    // Allow manual skip of boot sequence
+    crtScreen.addEventListener('click', hideBoot);
+    window.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === 'Escape') hideBoot();
+    });
+
+    // BagOS Initialization (called after boot completes)
+    function initializeBagOS() {
+      // Clock
+    const clock = document.getElementById('clock');
+    function updateClock(){
+      const now = new Date();
+      clock.textContent = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    }
+    updateClock(); setInterval(updateClock, 1000);
+
+    // Bring window to front
+    let zTop = 10;
+    function raise(win){ win.style.zIndex = ++zTop; }
+
+    // Window manager helpers
+    function openWindow(id){
+      const win = document.getElementById('window-'+id);
+      if(!win) return;
+      win.classList.add('show');
+      raise(win);
+      
+      // Special handling for bagbros window
+      if(id === 'bagbros') {
+        setTimeout(() => {
+          const loadButton = document.getElementById('loadBagBros');
+          if(loadButton) loadButton.click();
+        }, 500);
+      }
+      
+      // Add task if missing
+      let task = taskList.querySelector(`[data-task="${id}"]`);
+      if(!task){
+        task = document.createElement('div');
+        task.className = 'task';
+        task.dataset.task = id;
+        task.textContent = '⬜ ' + id;
+        task.onclick = ()=>{ toggleMinimize(win, task); };
+        taskList.appendChild(task);
+      }
+      task.classList.add('active');
+      win.dataset.minimized = 'false';
+      win.style.display = 'block';
+    }
+    function closeWindow(id){
+      const win = document.getElementById('window-'+id);
+      if(!win) return;
+      
+      // Check if this is a permanent desktop window (has show class by default)
+      const isPermanentWindow = ['notepad', 'settings', 'games', 'mybag', 'about', 'music', 'natebag', 'bagbros'].includes(id);
+      
+      if(isPermanentWindow) {
+        // For desktop windows, just minimize to taskbar instead of closing
+        const task = taskList.querySelector(`[data-task="${id}"]`);
+        if(task) {
+          toggleMinimize(win, task);
+        }
+      } else {
+        // For temporary windows, actually close them
+        win.classList.remove('show');
+        const task = taskList.querySelector(`[data-task="${id}"]`);
+        if(task) task.remove();
+      }
+    }
+    function toggleMinimize(win, task){
+      const minimized = win.dataset.minimized === 'true';
+      if(minimized){
+        win.dataset.minimized = 'false';
+        win.style.display = 'block';
+        raise(win);
+        task.classList.add('active');
+      } else {
+        win.dataset.minimized = 'true';
+        win.style.display = 'none';
+        task.classList.remove('active');
+      }
+    }
+
+    // Dragging
+    document.querySelectorAll('.window').forEach(win=>{
+      const bar = win.querySelector('.titlebar');
+      let ox=0, oy=0, dragging=false;
+      bar.addEventListener('mousedown', (e)=>{
+        if(e.target.closest('.win-btn')) return; // don't drag from buttons
+        dragging=true; raise(win);
+        const rect = win.getBoundingClientRect();
+        ox = e.clientX - rect.left; oy = e.clientY - rect.top;
+        document.body.style.cursor='grabbing';
+      });
+      window.addEventListener('mousemove', (e)=>{
+        if(!dragging) return;
+        const maxLeft = window.innerWidth - win.offsetWidth - 8;
+        const maxTop = window.innerHeight - 52 /*taskbar*/ - win.offsetHeight - 8;
+        win.style.left = Math.max(8, Math.min(maxLeft, e.clientX - ox)) + 'px';
+        win.style.top = Math.max(8, Math.min(maxTop, e.clientY - oy)) + 'px';
+      });
+      window.addEventListener('mouseup', ()=>{ dragging=false; document.body.style.cursor=''; });
+
+      // Controls
+      bar.parentElement.querySelectorAll('.win-btn').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const action = btn.dataset.action;
+          const id = win.id.replace('window-','');
+          if(action==='close') closeWindow(id);
+          if(action==='min'){
+            const task = taskList.querySelector(`[data-task="${id}"]`);
+            toggleMinimize(win, task);
+          }
+          if(action==='max'){
+            if(!win.classList.contains('maximize')){
+              win.dataset.prev = JSON.stringify({left: win.style.left, top: win.style.top, width: win.style.width, height: win.style.height});
+              win.classList.add('maximize');
+              win.style.left = '8px'; win.style.top = '8px'; win.style.width = (window.innerWidth-16)+'px'; win.style.height = (window.innerHeight-52-16)+'px';
+            } else {
+              const prev = JSON.parse(win.dataset.prev||'{}');
+              win.classList.remove('maximize');
+              Object.assign(win.style, prev);
+            }
+          }
+        });
+      });
+
+      // Double-click title to toggle maximize
+      win.querySelector('.titlebar').addEventListener('dblclick', ()=>{
+        win.querySelector('.win-btn[data-action="max"]').click();
+      });
+
+      // Focus on mousedown
+      win.addEventListener('mousedown', ()=>{ raise(win); });
+    });
+
+    // Start menu
+    function hideStart(){ startMenu.classList.remove('show'); }
+    function toggleStart(){ startMenu.classList.toggle('show'); }
+    startBtn.addEventListener('click', (e)=>{ e.stopPropagation(); toggleStart(); });
+    document.addEventListener('click', (e)=>{
+      if(!startMenu.contains(e.target) && e.target!==startBtn) hideStart();
+      if(!ctx.contains(e.target)) ctx.classList.remove('show');
+    });
+
+    // Start menu items
+    startMenu.querySelectorAll('[data-open]').forEach(i=>{
+      i.addEventListener('click', ()=>{ openWindow(i.dataset.open); hideStart(); });
+    });
+
+    // Desktop icons (draggable with double click to open)
+    let iconSel = null;
+    let dragData = { isDragging: false, startX: 0, startY: 0, startLeft: 0, startTop: 0, dragIcon: null };
+    
+    // Load saved icon positions from localStorage
+    function loadIconPositions() {
+      const savedPositions = localStorage.getItem('bagos-icon-positions');
+      if (savedPositions) {
+        const positions = JSON.parse(savedPositions);
+        Object.keys(positions).forEach(iconId => {
+          const icon = document.querySelector(`[data-open="${iconId}"]`);
+          if (icon) {
+            icon.style.left = positions[iconId].left + 'px';
+            icon.style.top = positions[iconId].top + 'px';
+          }
+        });
+      }
+    }
+    
+    // Save icon positions to localStorage
+    function saveIconPositions() {
+      const positions = {};
+      document.querySelectorAll('.icon').forEach(icon => {
+        const iconId = icon.dataset.open;
+        positions[iconId] = {
+          left: parseInt(icon.style.left),
+          top: parseInt(icon.style.top)
+        };
+      });
+      localStorage.setItem('bagos-icon-positions', JSON.stringify(positions));
+    }
+    
+    document.querySelectorAll('.icon').forEach(ic=>{
+      // Selection on click
+      ic.addEventListener('click', (e)=>{
+        if (!dragData.isDragging) {
+          if(iconSel) iconSel.classList.remove('selected');
+          ic.classList.add('selected'); iconSel = ic;
+        }
+        e.preventDefault();
+      });
+      
+      // Double click to open
+      ic.addEventListener('dblclick', (e)=>{ 
+        if (!dragData.isDragging) {
+          openWindow(ic.dataset.open); 
+        }
+        e.preventDefault();
+      });
+      
+      // Drag functionality
+      ic.addEventListener('mousedown', (e)=>{
+        if (e.button !== 0) return; // Only left mouse button
+        
+        dragData.isDragging = false;
+        dragData.dragIcon = ic;
+        dragData.startX = e.clientX;
+        dragData.startY = e.clientY;
+        dragData.startLeft = parseInt(ic.style.left) || 0;
+        dragData.startTop = parseInt(ic.style.top) || 0;
+        
+        // Select the icon being dragged
+        if(iconSel) iconSel.classList.remove('selected');
+        ic.classList.add('selected'); iconSel = ic;
+        
+        e.preventDefault();
+      });
+    });
+    
+    // Global mouse move and up handlers for dragging
+    document.addEventListener('mousemove', (e)=>{
+      if (!dragData.dragIcon) return;
+      
+      const deltaX = e.clientX - dragData.startX;
+      const deltaY = e.clientY - dragData.startY;
+      
+      // Start dragging if moved more than 5px
+      if (!dragData.isDragging && (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5)) {
+        dragData.isDragging = true;
+        dragData.dragIcon.classList.add('dragging');
+      }
+      
+      if (dragData.isDragging) {
+        const newLeft = Math.max(0, Math.min(window.innerWidth - 110, dragData.startLeft + deltaX));
+        const newTop = Math.max(0, Math.min(window.innerHeight - 120, dragData.startTop + deltaY));
+        
+        dragData.dragIcon.style.left = newLeft + 'px';
+        dragData.dragIcon.style.top = newTop + 'px';
+      }
+    });
+    
+    document.addEventListener('mouseup', ()=>{
+      if (dragData.dragIcon) {
+        dragData.dragIcon.classList.remove('dragging');
+        if (dragData.isDragging) {
+          saveIconPositions();
+        }
+        dragData.dragIcon = null;
+        dragData.isDragging = false;
+      }
+    });
+    
+    // Load icon positions on startup
+    loadIconPositions();
+
+    // Context menu on desktop
+    desktop.addEventListener('contextmenu', (e)=>{
+      e.preventDefault();
+      ctx.style.left = e.clientX + 'px';
+      ctx.style.top  = e.clientY + 'px';
+      ctx.classList.add('show');
+    });
+    ctx.querySelectorAll('[data-open]').forEach(i=> i.addEventListener('click', ()=>{ openWindow(i.dataset.open); ctx.classList.remove('show'); }));
+    document.getElementById('refresh').onclick = ()=> location.reload();
+
+    // TheBagBros website loader
+    document.getElementById('loadBagBros').addEventListener('click', ()=>{
+      const frame = document.getElementById('bagbrosFrame');
+      // Reload the actual website
+      frame.src = frame.src; // This forces a refresh
+    });
+
+    // Tray buttons
+    themeCycle.addEventListener('click', ()=>{
+      const themes = ['theme-xp','theme-95','theme-seven','theme-cube','theme-portal','theme-zombies','theme-halo3','theme-cod-zombies','theme-portal2'];
+      const cur = themes.findIndex(t=> body.classList.contains(t));
+      const next = themes[(cur+1)%themes.length];
+      body.className = next; localStorage.setItem('bagos-theme', next);
+    });
+
+    // Settings theme swatches
+    document.querySelectorAll('.theme-swatch').forEach(sw=> sw.addEventListener('click', ()=>{
+      body.className = sw.dataset.theme; localStorage.setItem('bagos-theme', sw.dataset.theme);
+    }));
+
+    // Restore theme
+    const savedTheme = localStorage.getItem('bagos-theme'); if(savedTheme) body.className = savedTheme;
+
+    // Music hum via WebAudio
+    let ac, osc, hum=false;
+    function toggleHum(){
+      if(!ac){ ac = new (window.AudioContext||window.webkitAudioContext)(); }
+      if(!hum){
+        osc = ac.createOscillator(); const gain = ac.createGain();
+        osc.type='sine'; osc.frequency.value = 140; gain.gain.value = 0.02; // subtle
+        osc.connect(gain).connect(ac.destination); osc.start(); hum=true; musicToggle.style.outline = '2px solid var(--accent)';
+      } else { try{ osc.stop(); }catch{} hum=false; musicToggle.style.outline=''; }
+    }
+    document.getElementById('humOnOff').addEventListener('click', toggleHum);
+
+    // Notepad save
+    const noteArea = document.getElementById('noteArea');
+    const noteTitle = document.getElementById('noteTitle');
+    document.getElementById('saveNote').addEventListener('click', ()=>{
+      const key = 'note:' + (noteTitle.value||'untitled');
+      localStorage.setItem(key, noteArea.value);
+      alert('Saved to localStorage as '+key);
+    });
+
+    // Drag & drop audio to Music app
+    desktop.addEventListener('dragover', e=>{ e.preventDefault(); });
+    desktop.addEventListener('drop', async (e)=>{
+      e.preventDefault();
+      if(!e.dataTransfer.files.length) return;
+      const file = e.dataTransfer.files[0];
+      if(file.type.startsWith('audio/')){
+        openWindow('music');
+        const url = URL.createObjectURL(file);
+        document.getElementById('audio').src = url;
+        document.getElementById('audio').play();
+      }
+    });
+
+    // Start menu: Shutdown
+    document.getElementById('shutdown').addEventListener('click', ()=>{
+      // Simulate shutdown -> boot splash -> desktop
+      boot.style.display='grid'; boot.style.opacity='1';
+      setTimeout(()=>{ boot.style.display='none'; }, 2300);
+    });
+
+    // Global open window dispatcher
+    function globalOpen(id){ openWindow(id); }
+    window.globalOpen = globalOpen;
+
+    // Map data-open clicks globally
+    document.querySelectorAll('[data-open]').forEach(el=>{
+      el.addEventListener('click', ()=> openWindow(el.dataset.open));
+    });
+
+    // Mini Music Player
+    const miniPlayer = document.getElementById('miniPlayer');
+    const miniAudio = document.getElementById('miniAudio');
+    const currentSong = document.getElementById('currentSong');
+    const playBtn = document.getElementById('playBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const progressBar = document.getElementById('progressBar');
+    const progressFill = document.getElementById('progressFill');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeFill = document.getElementById('volumeFill');
+    const playlist = document.getElementById('playlist');
+    const playerMinimize = document.getElementById('playerMinimize');
+    const playerClose = document.getElementById('playerClose');
+    const playerContent = document.getElementById('playerContent');
+
+    // Song list - update these paths to match your songs folder
+    const songs = [
+      { title: 'Kitty Shack', file: 'songs/kittyshack.ogg' },
+      { title: 'The Sims 2: Lemon Jelly', file: 'songs/Ts2_lemon_jelly_-_arch_of_the_sim.ogg' },
+      { title: 'Sonic: Escape From The City', file: 'songs/01 Escape From The City -from city escape-.flac' }
+    ];
+
+    let currentSongIndex = 0;
+    let isPlaying = false;
+    let volume = 0.7;
+
+    // Initialize player
+    function initMiniPlayer() {
+      miniAudio.volume = volume;
+      
+      // Populate playlist
+      songs.forEach((song, index) => {
+        const item = document.createElement('div');
+        item.className = 'playlist-item';
+        item.textContent = song.title;
+        item.onclick = () => loadSong(index);
+        playlist.appendChild(item);
+      });
+
+      // Load first song
+      if (songs.length > 0) {
+        loadSong(0);
+      }
+
+      // Update volume slider
+      volumeFill.style.width = (volume * 100) + '%';
+    }
+
+    function loadSong(index) {
+      currentSongIndex = index;
+      const song = songs[index];
+      miniAudio.src = song.file;
+      currentSong.textContent = song.title;
+
+      // Update playlist visual
+      document.querySelectorAll('.playlist-item').forEach((item, i) => {
+        item.classList.toggle('active', i === index);
+      });
+    }
+
+    function togglePlay() {
+      if (isPlaying) {
+        miniAudio.pause();
+        playBtn.textContent = '▶';
+        isPlaying = false;
+      } else {
+        miniAudio.play().catch(() => {
+          // Handle autoplay restrictions
+          alert('Click to allow audio playback');
+        });
+        playBtn.textContent = '⏸';
+        isPlaying = true;
+      }
+    }
+
+    function nextSong() {
+      currentSongIndex = (currentSongIndex + 1) % songs.length;
+      loadSong(currentSongIndex);
+      if (isPlaying) {
+        setTimeout(() => miniAudio.play(), 100);
+      }
+    }
+
+    function prevSong() {
+      currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+      loadSong(currentSongIndex);
+      if (isPlaying) {
+        setTimeout(() => miniAudio.play(), 100);
+      }
+    }
+
+    // Event listeners
+    playBtn.onclick = togglePlay;
+    nextBtn.onclick = nextSong;
+    prevBtn.onclick = prevSong;
+
+    // Progress bar
+    miniAudio.ontimeupdate = () => {
+      if (miniAudio.duration) {
+        const progress = (miniAudio.currentTime / miniAudio.duration) * 100;
+        progressFill.style.width = progress + '%';
+      }
+    };
+
+    progressBar.onclick = (e) => {
+      const rect = progressBar.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const percentage = clickX / rect.width;
+      miniAudio.currentTime = percentage * miniAudio.duration;
+    };
+
+    // Volume control
+    volumeSlider.onclick = (e) => {
+      const rect = volumeSlider.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      volume = clickX / rect.width;
+      miniAudio.volume = volume;
+      volumeFill.style.width = (volume * 100) + '%';
+    };
+
+    // Auto-play next song
+    miniAudio.onended = nextSong;
+
+    // Player controls
+    playerMinimize.onclick = () => {
+      miniPlayer.classList.toggle('minimized');
+      playerContent.style.display = miniPlayer.classList.contains('minimized') ? 'none' : 'block';
+    };
+
+    playerClose.onclick = () => {
+      miniPlayer.classList.remove('show');
+      miniAudio.pause();
+      isPlaying = false;
+      playBtn.textContent = '▶';
+    };
+
+    // Show mini player when music tray button is clicked
+    musicToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      miniPlayer.classList.toggle('show');
+      if (miniPlayer.classList.contains('show') && !playlist.children.length) {
+        initMiniPlayer();
+      }
+    });
+
+    // Initialize on page load
+    initMiniPlayer();
+    
+    } // End of initializeBagOS function
+
+    // CRT Boot Sequence Class
+    class CRTBootSequence {
+      constructor(config = {}) {
+        this.config = {
+          onComplete: config.onComplete || (() => {}),
+          messages: config.messages || this.getDefaultMessages(),
+          glitchDuration: config.glitchDuration || 600,
+          ceoPause: config.ceoPause || 800,
+          logoDuration: config.logoDuration || 3000, // 3 second logo flicker pause
+          ...config
+        };
+        
+        this.currentLine = 0;
+        this.bootTextElement = document.getElementById('bootText');
+        this.cursor = document.getElementById('bootCursor');
+        
+        this.init();
+      }
+      
+      getDefaultMessages() {
+        return [
+          { text: "BagBros OS v3.14159 - Bag Chasing Edition", type: "normal" },
+          { text: "(C) Copyright 2025 TheBagBros Corp. All bags reserved.", type: "normal" },
+          { text: "", type: "normal" },
+          { text: "Loading BagBros kernel modules...", type: "normal" },
+          { text: "bagchaser.sys........................[OK]", type: "success" },
+          { text: "soltrader.dll........................[OK]", type: "success" },
+          { text: "virtualfellas.com....................[OK]", type: "success" },
+          { text: "Xbox 360 JTag V1.26 MLG edition loaded", type: "rainbow" },
+          { text: "snaccfund.dll........................[ERROR]", type: "error" },
+          { text: "Snaccfund is being rate limited by Rick **ERROR**", type: "error" },
+          { text: "Rick blocking detected. Switching to backup snaccs...", type: "warning" },
+          { text: "backupsnaccs.dll.....................[OK]", type: "success" },
+          { text: "", type: "normal" },
+          { text: "GLITCH_TEXT_PLACEHOLDER", type: "glitch" },
+          { text: "", type: "normal" },
+          { text: "SOL price: $420.69 (+69.42%)", type: "success" },
+          { text: "Portfolio status: BAGS SECURED 💼", type: "success" },
+          { text: "@NatebagCEO account..................[VERIFIED]", type: "success" },
+          { text: "@NatebagMLG account..................[LEGENDARY]", type: "success" },
+          { text: "VirtualFellas.com....................[OPERATIONAL]", type: "success" },
+          { text: "", type: "normal" },
+          { text: "CEO status...........................[CONFIRMED]", type: "success" },
+          { text: "MLG status...........................[LEGENDARY]", type: "success" },
+          { text: "Bag chasing license..................[CERTIFIED]", type: "success" },
+          { text: "Rick tolerance.......................[MINIMAL]", type: "warning" },
+          { text: "", type: "normal" },
+          { text: "🚀 SYSTEM READY 🚀", type: "success" },
+          { text: "Bags secured. Ready to make money and hit clips...", type: "normal" },
+          { text: "", type: "normal" }
+        ];
+      }
+      
+      init() {
+        setTimeout(() => {
+          this.startBoot();
+        }, 100);
+      }
+      
+      startBoot() {
+        this.typeLine();
+      }
+      
+      typeLine() {
+        if (this.currentLine < this.config.messages.length) {
+          const message = this.config.messages[this.currentLine];
+          const line = message.text;
+          const messageType = message.type;
+          
+          if (line === "GLITCH_TEXT_PLACEHOLDER") {
+            this.startGlitchSequence();
+            return;
+          }
+          
+          let currentChar = 0;
+          const lineElement = document.createElement('div');
+          lineElement.className = `boot-line ${messageType}`;
+          this.bootTextElement.appendChild(lineElement);
+          
+          const typeChar = () => {
+            if (currentChar < line.length) {
+              lineElement.textContent += line[currentChar];
+              currentChar++;
+              
+              let delay;
+              if (messageType === 'error') {
+                delay = Math.random() * 0.5 + 0.2;
+              } else if (messageType === 'rainbow') {
+                delay = Math.random() * 0.8 + 0.3;
+              } else {
+                delay = Math.random() * 0.2 + 0.05;
+              }
+              setTimeout(typeChar, delay);
+            } else {
+              this.currentLine++;
+              const pauseTime = messageType === 'error' ? Math.random() * 4 + 1 : Math.random() * 1.5 + 0.5;
+              setTimeout(() => this.typeLine(), pauseTime);
+            }
+          };
+          
+          setTimeout(typeChar, Math.random() * 2 + 1);
+        } else {
+          this.completeBoot();
+        }
+      }
+      
+      startGlitchSequence() {
+        const glitchElement = document.createElement('div');
+        glitchElement.className = 'boot-line glitch';
+        glitchElement.style.textAlign = 'center';
+        this.bootTextElement.appendChild(glitchElement);
+        
+        const randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*(){}[]|\\:";\'<>?,./`~';
+        let glitchCount = 0;
+        const maxGlitches = 50;
+        
+        const glitchText = () => {
+          if (glitchCount < maxGlitches) {
+            let glitchString = '';
+            for (let i = 0; i < 25; i++) {
+              glitchString += randomChars[Math.floor(Math.random() * randomChars.length)];
+            }
+            glitchElement.textContent = glitchString;
+            glitchCount++;
+            setTimeout(glitchText, 15);
+          } else {
+            this.showCEOText();
+          }
+        };
+        
+        glitchText();
+      }
+      
+      showCEOText() {
+        const glitchElements = document.querySelectorAll('.boot-line.glitch');
+        glitchElements.forEach(el => el.remove());
+        
+        const ceoElement = document.createElement('div');
+        ceoElement.className = 'ceo-text';
+        ceoElement.textContent = 'CEO OF THE BAGBROS';
+        ceoElement.style.marginTop = '10px';
+        this.bootTextElement.appendChild(ceoElement);
+        
+        setTimeout(() => {
+          const ceoElements = document.querySelectorAll('.ceo-text');
+          ceoElements.forEach(el => el.remove());
+          this.currentLine++;
+          this.typeLine();
+        }, this.config.ceoPause);
+      }
+      
+      completeBoot() {
+        this.cursor.style.display = 'none';
+        this.showLogo();
+      }
+      
+      showLogo() {
+        this.bootTextElement.innerHTML = '';
+        
+        const logo = `
+    
+    
+          .###*+.=                                            
+       .###=+*###.                                            
+      ####.     .####.                                       
+     ++++         ####.                                      
+    .###           =###                                      
+    ####           +###                                      
+    ####           =###                                      
+    ####           +++.                                      
+    ####           .###                                      
+    .##=           .###                                      
+                   ####                                      
+                   ++++                                      
+                   ####                                      
+                   ###=   .###***+                           
+                   ####    ####=###                          
+                   ####        ####+                         
+                   ####          *###                        
+                   ####           ####                       
+                   ####           ####                       
+                   ####*        +#####                       
+                    .####+     ####=.                        
+                      ###########*                           
+                        .#####+=                             
+    
+    
+                            NATEBAG CEO
+                          TheBagBros © 2025
+                           VirtualFellas
+                `;
+        
+        const logoElement = document.createElement('pre');
+        logoElement.className = 'logo-text';
+        logoElement.innerHTML = logo;
+        
+        this.bootTextElement.appendChild(logoElement);
+        
+        // Add CRT flicker effect after a short delay
+        setTimeout(() => {
+          logoElement.classList.add('crt-flicker');
+        }, 200);
+        
+        setTimeout(() => {
+          this.config.onComplete();
+        }, this.config.logoDuration);
+      }
+    }
+
+    // Initialize CRT Boot Sequence (now that class is defined)
+    const bootSequence = new CRTBootSequence({
+      onComplete: hideBoot
+    });
+
+    // Konami code Easter egg -> open Notepad with cake message
+    const konami = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];
+    let kIdx = 0;
+    window.addEventListener('keydown', (e)=>{
+      const key = e.key.length===1 ? e.key.toLowerCase() : e.key;
+      if(key === konami[kIdx] || key === konami[kIdx].toLowerCase()){
+        kIdx++; if(kIdx === konami.length){
+          kIdx = 0; openWindow('notepad');
+          noteTitle.value = 'cake.txt';
+          noteArea.value = 'The cake is a lie. 🍰\n\n(You unlocked this with the Konami code.)';
+        }
+      } else { kIdx = 0; }
+    });
+  </script>
+</body>
+</html>
