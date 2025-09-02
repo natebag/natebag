@@ -805,6 +805,7 @@
 
   <script src="config/api-config.js"></script>
   <script>
+    // Global variables - available immediately
     const body = document.body;
     const desktop = document.getElementById('desktop');
     const startBtn = document.getElementById('startBtn');
@@ -820,41 +821,12 @@
     const bootCursor = document.getElementById('bootCursor');
     const taskbar = document.getElementById('taskbar');
 
-    function hideBoot(){ 
-      crtScreen.style.opacity = '0';
-      crtScreen.style.transition = 'opacity 0.5s ease-out';
-      setTimeout(() => {
-        crtScreen.style.display = 'none';
-        // Show OS elements after boot completes
-        desktop.style.display = 'block';
-        taskbar.style.display = 'flex';
-        startMenu.style.display = 'none'; // Keep menu hidden initially
-        // Initialize OS functionality
-        initializeBagOS();
-      }, 500);
-    }
-
-    // Allow manual skip of boot sequence
-    crtScreen.addEventListener('click', hideBoot);
-    window.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === 'Escape') hideBoot();
-    });
-
-    // BagOS Initialization (called after boot completes)
-    function initializeBagOS() {
-      // Clock
-    const clock = document.getElementById('clock');
-    function updateClock(){
-      const now = new Date();
-      clock.textContent = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-    }
-    updateClock(); setInterval(updateClock, 1000);
-
-    // Bring window to front
+    // Global window management variables
     let zTop = 10;
+    
+    // Core window functions - available immediately
     function raise(win){ win.style.zIndex = ++zTop; }
-
-    // Window manager helpers
+    
     function openWindow(id){
       const win = document.getElementById('window-'+id);
       if(!win) return;
@@ -883,11 +855,12 @@
       win.dataset.minimized = 'false';
       win.style.display = 'block';
     }
+    
     function closeWindow(id){
       const win = document.getElementById('window-'+id);
       if(!win) return;
       
-      // Check if this is a permanent desktop window (has show class by default)
+      // Check if this is a permanent desktop window
       const isPermanentWindow = ['notepad', 'settings', 'games', 'mybag', 'about', 'music', 'natebag', 'bagbros'].includes(id);
       
       if(isPermanentWindow) {
@@ -903,6 +876,7 @@
         if(task) task.remove();
       }
     }
+    
     function toggleMinimize(win, task){
       const minimized = win.dataset.minimized === 'true';
       if(minimized){
@@ -917,58 +891,95 @@
       }
     }
 
-    // Dragging
-    document.querySelectorAll('.window').forEach(win=>{
-      const bar = win.querySelector('.titlebar');
-      let ox=0, oy=0, dragging=false;
-      bar.addEventListener('mousedown', (e)=>{
-        if(e.target.closest('.win-btn')) return; // don't drag from buttons
-        dragging=true; raise(win);
-        const rect = win.getBoundingClientRect();
-        ox = e.clientX - rect.left; oy = e.clientY - rect.top;
-        document.body.style.cursor='grabbing';
-      });
-      window.addEventListener('mousemove', (e)=>{
-        if(!dragging) return;
-        const maxLeft = window.innerWidth - win.offsetWidth - 8;
-        const maxTop = window.innerHeight - 52 /*taskbar*/ - win.offsetHeight - 8;
-        win.style.left = Math.max(8, Math.min(maxLeft, e.clientX - ox)) + 'px';
-        win.style.top = Math.max(8, Math.min(maxTop, e.clientY - oy)) + 'px';
-      });
-      window.addEventListener('mouseup', ()=>{ dragging=false; document.body.style.cursor=''; });
+    function hideBoot(){ 
+      crtScreen.style.opacity = '0';
+      crtScreen.style.transition = 'opacity 0.5s ease-out';
+      setTimeout(() => {
+        crtScreen.style.display = 'none';
+        // Show OS elements after boot completes
+        desktop.style.display = 'block';
+        taskbar.style.display = 'flex';
+        startMenu.style.display = 'none'; // Keep menu hidden initially
+        // Initialize remaining OS functionality
+        initializeBagOS();
+      }, 500);
+    }
 
-      // Controls
-      bar.parentElement.querySelectorAll('.win-btn').forEach(btn=>{
-        btn.addEventListener('click', ()=>{
-          const action = btn.dataset.action;
-          const id = win.id.replace('window-','');
-          if(action==='close') closeWindow(id);
-          if(action==='min'){
-            const task = taskList.querySelector(`[data-task="${id}"]`);
-            toggleMinimize(win, task);
-          }
-          if(action==='max'){
-            if(!win.classList.contains('maximize')){
-              win.dataset.prev = JSON.stringify({left: win.style.left, top: win.style.top, width: win.style.width, height: win.style.height});
-              win.classList.add('maximize');
-              win.style.left = '8px'; win.style.top = '8px'; win.style.width = (window.innerWidth-16)+'px'; win.style.height = (window.innerHeight-52-16)+'px';
-            } else {
-              const prev = JSON.parse(win.dataset.prev||'{}');
-              win.classList.remove('maximize');
-              Object.assign(win.style, prev);
-            }
-          }
-        });
-      });
-
-      // Double-click title to toggle maximize
-      win.querySelector('.titlebar').addEventListener('dblclick', ()=>{
-        win.querySelector('.win-btn[data-action="max"]').click();
-      });
-
-      // Focus on mousedown
-      win.addEventListener('mousedown', ()=>{ raise(win); });
+    // Allow manual skip of boot sequence
+    crtScreen.addEventListener('click', hideBoot);
+    window.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === 'Escape') hideBoot();
     });
+
+    // Initialize window controls immediately (don't wait for boot)
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeWindowControls();
+    });
+
+    function initializeWindowControls() {
+      // Window dragging and controls - set up immediately
+      document.querySelectorAll('.window').forEach(win=>{
+        const bar = win.querySelector('.titlebar');
+        let ox=0, oy=0, dragging=false;
+        bar.addEventListener('mousedown', (e)=>{
+          if(e.target.closest('.win-btn')) return; // don't drag from buttons
+          dragging=true; raise(win);
+          const rect = win.getBoundingClientRect();
+          ox = e.clientX - rect.left; oy = e.clientY - rect.top;
+          document.body.style.cursor='grabbing';
+        });
+        window.addEventListener('mousemove', (e)=>{
+          if(!dragging) return;
+          const maxLeft = window.innerWidth - win.offsetWidth - 8;
+          const maxTop = window.innerHeight - 52 /*taskbar*/ - win.offsetHeight - 8;
+          win.style.left = Math.max(8, Math.min(maxLeft, e.clientX - ox)) + 'px';
+          win.style.top = Math.max(8, Math.min(maxTop, e.clientY - oy)) + 'px';
+        });
+        window.addEventListener('mouseup', ()=>{ dragging=false; document.body.style.cursor=''; });
+
+        // Controls - CRITICAL: Set these up immediately
+        bar.parentElement.querySelectorAll('.win-btn').forEach(btn=>{
+          btn.addEventListener('click', ()=>{
+            const action = btn.dataset.action;
+            const id = win.id.replace('window-','');
+            if(action==='close') closeWindow(id);
+            if(action==='min'){
+              const task = taskList.querySelector(`[data-task="${id}"]`);
+              toggleMinimize(win, task);
+            }
+            if(action==='max'){
+              if(!win.classList.contains('maximize')){
+                win.dataset.prev = JSON.stringify({left: win.style.left, top: win.style.top, width: win.style.width, height: win.style.height});
+                win.classList.add('maximize');
+                win.style.left = '8px'; win.style.top = '8px'; win.style.width = (window.innerWidth-16)+'px'; win.style.height = (window.innerHeight-52-16)+'px';
+              } else {
+                const prev = JSON.parse(win.dataset.prev||'{}');
+                win.classList.remove('maximize');
+                Object.assign(win.style, prev);
+              }
+            }
+          });
+        });
+
+        // Double-click title to toggle maximize
+        win.querySelector('.titlebar').addEventListener('dblclick', ()=>{
+          win.querySelector('.win-btn[data-action="max"]').click();
+        });
+
+        // Focus on mousedown
+        win.addEventListener('mousedown', ()=>{ raise(win); });
+      });
+    }
+
+    // BagOS Initialization (called after boot completes)
+    function initializeBagOS() {
+      // Clock
+      const clock = document.getElementById('clock');
+      function updateClock(){
+        const now = new Date();
+        clock.textContent = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      }
+      updateClock(); setInterval(updateClock, 1000);
 
     // Start menu
     function hideStart(){ startMenu.classList.remove('show'); }
@@ -1189,11 +1200,10 @@
     const playerClose = document.getElementById('playerClose');
     const playerContent = document.getElementById('playerContent');
 
-    // Song list - update these paths to match your songs folder
+    // Song list - only include files that actually exist
     const songs = [
       { title: 'Kitty Shack', file: 'songs/kittyshack.ogg' },
-      { title: 'The Sims 2: Lemon Jelly', file: 'songs/Ts2_lemon_jelly_-_arch_of_the_sim.ogg' },
-      { title: 'Sonic: Escape From The City', file: 'songs/01 Escape From The City -from city escape-.flac' }
+      { title: 'The Sims 2: Lemon Jelly', file: 'songs/Ts2_lemon_jelly_-_arch_of_the_sim.ogg' }
     ];
 
     let currentSongIndex = 0;
@@ -1232,6 +1242,16 @@
       document.querySelectorAll('.playlist-item').forEach((item, i) => {
         item.classList.toggle('active', i === index);
       });
+
+      // Add error handling for audio loading
+      miniAudio.onerror = () => {
+        console.error(`Failed to load audio: ${song.file}`);
+        currentSong.textContent = `Error loading: ${song.title}`;
+      };
+
+      miniAudio.onloadstart = () => {
+        console.log(`Loading: ${song.file}`);
+      };
     }
 
     function togglePlay() {
@@ -1240,12 +1260,23 @@
         playBtn.textContent = '▶';
         isPlaying = false;
       } else {
-        miniAudio.play().catch(() => {
-          // Handle autoplay restrictions
-          alert('Click to allow audio playback');
+        // Better error handling with user feedback
+        miniAudio.play().then(() => {
+          playBtn.textContent = '⏸';
+          isPlaying = true;
+        }).catch((error) => {
+          console.error('Playback failed:', error);
+          // Try to provide more specific error messages
+          if (error.name === 'NotAllowedError') {
+            alert('Audio playback blocked. Please click the play button to allow audio.');
+          } else if (error.name === 'NotSupportedError') {
+            alert('Audio format not supported by your browser.');
+          } else {
+            alert(`Playback failed: ${error.message}`);
+          }
+          playBtn.textContent = '▶';
+          isPlaying = false;
         });
-        playBtn.textContent = '⏸';
-        isPlaying = true;
       }
     }
 
@@ -1314,12 +1345,9 @@
     musicToggle.addEventListener('click', (e) => {
       e.stopPropagation();
       miniPlayer.classList.toggle('show');
-      if (miniPlayer.classList.contains('show') && !playlist.children.length) {
-        initMiniPlayer();
-      }
     });
 
-    // Initialize on page load
+    // Initialize mini player immediately - don't wait for click
     initMiniPlayer();
     
     } // End of initializeBagOS function
