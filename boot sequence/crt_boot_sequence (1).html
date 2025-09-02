@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRT Boot Sequence</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* CRT Screen Container */
+        .crt-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.3) 100%),
+                linear-gradient(0deg, transparent 50%, rgba(0, 255, 0, 0.02) 50%);
+            background-size: 100% 100%, 100% 4px;
+            z-index: 9999;
+        }
+        
+        /* CRT Curvature Effect */
+        .crt-screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, transparent 70%, rgba(0,0,0,0.8) 100%);
+            pointer-events: none;
+        }
+        
+        /* Scanlines */
+        .crt-screen::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 255, 0, 0.05) 2px,
+                rgba(0, 255, 0, 0.05) 4px
+            );
+            animation: scanlines 0.1s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes scanlines {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(4px); }
+        }
+        
+        /* Boot Terminal */
+        .boot-terminal {
+            position: relative;
+            padding: 40px;
+            color: #00ff00;
+            font-size: 14px;
+            line-height: 1.2;
+            height: 100vh;
+            overflow: hidden;
+            background: 
+                radial-gradient(ellipse at center, rgba(0, 20, 0, 0.9) 0%, rgba(0, 10, 0, 0.95) 100%);
+            text-shadow: 0 0 5px currentColor;
+            animation: screenFlicker 0.15s ease-in-out infinite alternate;
+        }
+        
+        @keyframes screenFlicker {
+            0% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
+        
+        /* Phosphor Glow */
+        .boot-text {
+            filter: blur(0.5px);
+        }
+        
+        .boot-line {
+            opacity: 0;
+            animation: typeLine 0.1s ease-in-out forwards;
+            margin-bottom: 2px;
+        }
+        
+        .boot-line.error {
+            color: #ff3030;
+            text-shadow: 0 0 5px #ff3030;
+        }
+        
+        .boot-line.warning {
+            color: #ffff30;
+            text-shadow: 0 0 5px #ffff30;
+        }
+        
+        .boot-line.success {
+            color: #30ff30;
+            text-shadow: 0 0 5px #30ff30;
+        }
+        
+        .boot-line.rainbow {
+            background: linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #80ff00, #00ff00, #00ff80, #00ffff, #0080ff, #0000ff, #8000ff, #ff00ff, #ff0080);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: rainbowShift 2s ease infinite;
+            text-shadow: none;
+        }
+        
+        .boot-line.glitch {
+            color: #ffff30;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-shadow: 0 0 8px #ffff30;
+        }
+        
+        .ceo-text {
+            color: #00ff88;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 4px;
+            text-shadow: 0 0 15px #00ff88;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        .logo-text {
+            color: #4da6ff;
+            font-size: 10px;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 0 15px #4da6ff, 0 0 25px #4da6ff;
+            animation: logoGlow 3s ease-in-out infinite alternate;
+            white-space: pre;
+            margin: 0;
+        }
+        
+        .cursor {
+            background: #00ff00;
+            animation: blink 1s infinite;
+            text-shadow: 0 0 5px #00ff00;
+        }
+        
+        @keyframes typeLine {
+            to { opacity: 1; }
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        @keyframes rainbowShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes glow {
+            0% { 
+                text-shadow: 0 0 15px #00ff88, 0 0 25px #00ff88;
+                transform: scale(1);
+            }
+            100% { 
+                text-shadow: 0 0 20px #00ff88, 0 0 35px #00ff88, 0 0 45px #00ff88;
+                transform: scale(1.02);
+            }
+        }
+        
+        @keyframes logoGlow {
+            0% { 
+                text-shadow: 0 0 15px #4da6ff, 0 0 25px #4da6ff;
+                opacity: 0.9;
+            }
+            100% { 
+                text-shadow: 0 0 25px #4da6ff, 0 0 40px #4da6ff, 0 0 55px #4da6ff;
+                opacity: 1;
+            }
+        }
+
+        /* CRT Logo Flicker Effect */
+        .logo-text.crt-flicker {
+            animation: logoGlow 3s ease-in-out infinite alternate, crtFlicker 0.8s ease-in-out infinite;
+        }
+
+        @keyframes crtFlicker {
+            0% { 
+                opacity: 1;
+                transform: scaleX(1) scaleY(1);
+                filter: brightness(1) contrast(1);
+            }
+            2% { 
+                opacity: 0.8;
+                transform: scaleX(0.99) scaleY(1.02);
+                filter: brightness(1.1) contrast(1.2);
+            }
+            4% { 
+                opacity: 1;
+                transform: scaleX(1.01) scaleY(0.98);
+                filter: brightness(0.9) contrast(1.1);
+            }
+            6% { 
+                opacity: 0.9;
+                transform: scaleX(1) scaleY(1.01);
+                filter: brightness(1.2) contrast(0.9);
+            }
+            8% { 
+                opacity: 1;
+                transform: scaleX(1) scaleY(1);
+                filter: brightness(1) contrast(1);
+            }
+            92% { 
+                opacity: 1;
+                transform: scaleX(1) scaleY(1);
+                filter: brightness(1) contrast(1);
+            }
+            94% { 
+                opacity: 0.7;
+                transform: scaleX(0.98) scaleY(1.03);
+                filter: brightness(1.3) contrast(1.3);
+            }
+            96% { 
+                opacity: 1;
+                transform: scaleX(1.02) scaleY(0.97);
+                filter: brightness(0.8) contrast(1.2);
+            }
+            98% { 
+                opacity: 0.85;
+                transform: scaleX(1) scaleY(1.02);
+                filter: brightness(1.1) contrast(0.8);
+            }
+            100% { 
+                opacity: 1;
+                transform: scaleX(1) scaleY(1);
+                filter: brightness(1) contrast(1);
+            }
+        }
+        
+        /* CRT Power-on effect */
+        .crt-screen.powering-on {
+            animation: powerOn 1s ease-out forwards;
+        }
+        
+        @keyframes powerOn {
+            0% {
+                opacity: 0;
+                transform: scale(1, 0.001);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1, 0.001);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1, 1);
+            }
+        }
+        
+        /* Screen Static */
+        .static-noise {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.03;
+            background-image: 
+                repeating-conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(255,255,255,1) 1deg, transparent 2deg);
+            background-size: 3px 3px;
+            animation: staticNoise 0.1s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes staticNoise {
+            0% { transform: translate(0px, 0px); }
+            25% { transform: translate(1px, -1px); }
+            50% { transform: translate(-1px, 1px); }
+            75% { transform: translate(1px, 1px); }
+            100% { transform: translate(-1px, -1px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="crt-screen powering-on" id="crtScreen">
+        <div class="static-noise"></div>
+        <div class="boot-terminal">
+            <div class="boot-text" id="bootText"></div>
+            <span class="cursor" id="cursor">_</span>
+        </div>
+    </div>
+
+    <script>
+        // CRT Boot Sequence Component
+        class CRTBootSequence {
+            constructor(config = {}) {
+                this.config = {
+                    onComplete: config.onComplete || (() => {}),
+                    messages: config.messages || this.getDefaultMessages(),
+                    glitchDuration: config.glitchDuration || 800,
+                    ceoPause: config.ceoPause || 1200,
+                    logoDuration: config.logoDuration || 2000,
+                    ...config
+                };
+                
+                this.currentLine = 0;
+                this.bootTextElement = document.getElementById('bootText');
+                this.cursor = document.getElementById('cursor');
+                
+                this.init();
+            }
+            
+            getDefaultMessages() {
+                return [
+                    { text: "BagBros OS v3.14159 - Bag Chasing Edition", type: "normal" },
+                    { text: "(C) Copyright 2025 TheBagBros Corp. All bags reserved.", type: "normal" },
+                    { text: "", type: "normal" },
+                    { text: "Loading BagBros kernel modules...", type: "normal" },
+                    { text: "bagchaser.sys........................[OK]", type: "success" },
+                    { text: "soltrader.dll........................[OK]", type: "success" },
+                    { text: "virtualfellas.com....................[OK]", type: "success" },
+                    { text: "Xbox 360 JTag V1.26 MLG edition loaded", type: "rainbow" },
+                    { text: "snaccfund.dll........................[ERROR]", type: "error" },
+                    { text: "Snaccfund is being rate limited by Rick **ERROR**", type: "error" },
+                    { text: "Rick blocking detected. Switching to backup snaccs...", type: "warning" },
+                    { text: "backupsnaccs.dll.....................[OK]", type: "success" },
+                    { text: "", type: "normal" },
+                    { text: "GLITCH_TEXT_PLACEHOLDER", type: "glitch" },
+                    { text: "", type: "normal" },
+                    { text: "SOL price: $420.69 (+69.42%)", type: "success" },
+                    { text: "Portfolio status: BAGS SECURED 💼", type: "success" },
+                    { text: "@NatebagCEO account..................[VERIFIED]", type: "success" },
+                    { text: "@NatebagMLG account..................[LEGENDARY]", type: "success" },
+                    { text: "VirtualFellas.com....................[OPERATIONAL]", type: "success" },
+                    { text: "", type: "normal" },
+                    { text: "CEO status...........................[CONFIRMED]", type: "success" },
+                    { text: "MLG status...........................[LEGENDARY]", type: "success" },
+                    { text: "Bag chasing license..................[CERTIFIED]", type: "success" },
+                    { text: "Rick tolerance.......................[MINIMAL]", type: "warning" },
+                    { text: "", type: "normal" },
+                    { text: "🚀 SYSTEM READY 🚀", type: "success" },
+                    { text: "Bags secured. Ready to make money and hit clips...", type: "normal" },
+                    { text: "", type: "normal" }
+                ];
+            }
+            
+            init() {
+                setTimeout(() => {
+                    this.startBoot();
+                }, 100);
+            }
+            
+            startBoot() {
+                this.typeLine();
+            }
+            
+            typeLine() {
+                if (this.currentLine < this.config.messages.length) {
+                    const message = this.config.messages[this.currentLine];
+                    const line = message.text;
+                    const messageType = message.type;
+                    
+                    if (line === "GLITCH_TEXT_PLACEHOLDER") {
+                        this.startGlitchSequence();
+                        return;
+                    }
+                    
+                    let currentChar = 0;
+                    const lineElement = document.createElement('div');
+                    lineElement.className = `boot-line ${messageType}`;
+                    this.bootTextElement.appendChild(lineElement);
+                    
+                    const typeChar = () => {
+                        if (currentChar < line.length) {
+                            lineElement.textContent += line[currentChar];
+                            currentChar++;
+                            
+                            let delay;
+                            if (messageType === 'error') {
+                                delay = Math.random() * 0.8 + 0.3;
+                            } else if (messageType === 'rainbow') {
+                                delay = Math.random() * 1.2 + 0.5;
+                            } else {
+                                delay = Math.random() * 0.4 + 0.1;
+                            }
+                            setTimeout(typeChar, delay);
+                        } else {
+                            this.currentLine++;
+                            const pauseTime = messageType === 'error' ? Math.random() * 8 + 3 : Math.random() * 3 + 1;
+                            setTimeout(() => this.typeLine(), pauseTime);
+                        }
+                    };
+                    
+                    setTimeout(typeChar, Math.random() * 2 + 1);
+                } else {
+                    this.completeBoot();
+                }
+            }
+            
+            startGlitchSequence() {
+                const glitchElement = document.createElement('div');
+                glitchElement.className = 'boot-line glitch';
+                glitchElement.style.textAlign = 'center';
+                this.bootTextElement.appendChild(glitchElement);
+                
+                const randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*(){}[]|\\:";\'<>?,./`~';
+                let glitchCount = 0;
+                const maxGlitches = 50;
+                
+                const glitchText = () => {
+                    if (glitchCount < maxGlitches) {
+                        let glitchString = '';
+                        for (let i = 0; i < 25; i++) {
+                            glitchString += randomChars[Math.floor(Math.random() * randomChars.length)];
+                        }
+                        glitchElement.textContent = glitchString;
+                        glitchCount++;
+                        setTimeout(glitchText, 15);
+                    } else {
+                        this.showCEOText();
+                    }
+                };
+                
+                glitchText();
+            }
+            
+            showCEOText() {
+                const glitchElements = document.querySelectorAll('.boot-line.glitch');
+                glitchElements.forEach(el => el.remove());
+                
+                const ceoElement = document.createElement('div');
+                ceoElement.className = 'ceo-text';
+                ceoElement.textContent = 'CEO OF THE BAGBROS';
+                ceoElement.style.marginTop = '10px';
+                this.bootTextElement.appendChild(ceoElement);
+                
+                setTimeout(() => {
+                    const ceoElements = document.querySelectorAll('.ceo-text');
+                    ceoElements.forEach(el => el.remove());
+                    this.currentLine++;
+                    this.typeLine();
+                }, this.config.ceoPause);
+            }
+            
+            completeBoot() {
+                this.cursor.style.display = 'none';
+                this.showLogo();
+            }
+            
+            showLogo() {
+                this.bootTextElement.innerHTML = '';
+                
+                const logo = `
+    
+    
+          .###*+.=                                            
+       .###=+*###.                                            
+      ####.     .####.                                       
+     ++++         ####.                                      
+    .###           =###                                      
+    ####           +###                                      
+    ####           =###                                      
+    ####           +++.                                      
+    ####           .###                                      
+    .##=           .###                                      
+                   ####                                      
+                   ++++                                      
+                   ####                                      
+                   ###=   .###***+                           
+                   ####    ####=###                          
+                   ####        ####+                         
+                   ####          *###                        
+                   ####           ####                       
+                   ####           ####                       
+                   ####*        +#####                       
+                    .####+     ####=.                        
+                      ###########*                           
+                        .#####+=                             
+    
+    
+                            NATEBAG CEO
+                          TheBagBros © 2025
+                           VirtualFellas
+                `;
+                
+                const logoElement = document.createElement('pre');
+                logoElement.className = 'logo-text';
+                logoElement.innerHTML = logo;
+                
+                this.bootTextElement.appendChild(logoElement);
+                
+                // Add CRT flicker effect after a short delay
+                setTimeout(() => {
+                    logoElement.classList.add('crt-flicker');
+                }, 200);
+                
+                setTimeout(() => {
+                    this.config.onComplete();
+                }, this.config.logoDuration);
+            }
+            
+            // Public method to hide the boot screen
+            hide() {
+                const screen = document.getElementById('crtScreen');
+                screen.style.opacity = '0';
+                screen.style.transition = 'opacity 0.5s ease-out';
+                setTimeout(() => {
+                    screen.style.display = 'none';
+                }, 500);
+            }
+        }
+        
+        // Initialize the boot sequence
+        const bootSequence = new CRTBootSequence({
+            onComplete: () => {
+                console.log('Boot sequence complete! Add your site logic here.');
+                // Example: bootSequence.hide(); then load your actual site
+            }
+        });
+        
+        // Example: Auto-hide after completion (remove this in real usage)
+        setTimeout(() => {
+            bootSequence.hide();
+            document.body.style.background = '#1a1a2e'; // Show something behind
+            document.body.innerHTML += '<div style="color: #00ff00; text-align: center; padding: 50px; font-family: Courier New;">Boot sequence complete! Your site content goes here.</div>';
+        }, 7000); // Adjusted for faster boot sequence
+    </script>
+</body>
+</html>
