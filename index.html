@@ -892,10 +892,17 @@
       }, 500);
     }
 
-    // Allow manual skip of boot sequence
-    crtScreen.addEventListener('click', hideBoot);
+    // Track if password is required - initialize globally
+    window.passwordRequired = false;
+    
+    // Allow manual skip of boot sequence (but not during password prompt)
+    crtScreen.addEventListener('click', () => {
+      if (!window.passwordRequired) hideBoot();
+    });
     window.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === 'Escape') hideBoot();
+      if (!window.passwordRequired && (e.key === 'Enter' || e.key === 'Escape')) {
+        hideBoot();
+      }
     });
 
     // Initialize window controls immediately (don't wait for boot)
@@ -1549,6 +1556,9 @@
       }
       
       showPasswordPrompt() {
+        // Set password required flag to prevent boot skip
+        window.passwordRequired = true;
+        
         // Clear the screen and show password prompt
         this.bootTextElement.innerHTML = '';
         
@@ -1641,6 +1651,9 @@
       }
       
       showAccessGranted() {
+        // Reset password required flag - access granted
+        window.passwordRequired = false;
+        
         this.bootTextElement.innerHTML = '';
         
         const accessContainer = document.createElement('div');
