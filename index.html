@@ -895,10 +895,7 @@
     // Track if password is required - initialize globally
     window.passwordRequired = false;
     
-    // Allow manual skip of boot sequence (but not during password prompt)
-    crtScreen.addEventListener('click', () => {
-      if (!window.passwordRequired) hideBoot();
-    });
+    // Allow manual skip of boot sequence with keyboard only (not during password prompt)
     window.addEventListener('keydown', e => {
       if (!window.passwordRequired && (e.key === 'Enter' || e.key === 'Escape')) {
         hideBoot();
