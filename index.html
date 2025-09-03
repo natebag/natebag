@@ -1542,9 +1542,135 @@
           logoElement.classList.add('crt-flicker');
         }, 200);
         
+        // Show password prompt after logo displays
+        setTimeout(() => {
+          this.showPasswordPrompt();
+        }, this.config.logoDuration);
+      }
+      
+      showPasswordPrompt() {
+        // Clear the screen and show password prompt
+        this.bootTextElement.innerHTML = '';
+        
+        // Create password prompt elements
+        const promptContainer = document.createElement('div');
+        promptContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 20px;';
+        
+        const promptText = document.createElement('div');
+        promptText.className = 'boot-line success';
+        promptText.style.cssText = 'font-size: 18px; text-align: center; margin-bottom: 10px;';
+        promptText.textContent = 'ALPHA ACCESS REQUIRED';
+        
+        const instructionText = document.createElement('div');
+        instructionText.className = 'boot-line';
+        instructionText.style.cssText = 'font-size: 14px; text-align: center; margin-bottom: 20px;';
+        instructionText.textContent = 'Enter authorization code to proceed:';
+        
+        const inputContainer = document.createElement('div');
+        inputContainer.style.cssText = 'display: flex; align-items: center; gap: 10px;';
+        
+        const promptSymbol = document.createElement('span');
+        promptSymbol.className = 'boot-line';
+        promptSymbol.style.cssText = 'font-size: 16px;';
+        promptSymbol.textContent = '> ';
+        
+        const passwordInput = document.createElement('input');
+        passwordInput.type = 'password';
+        passwordInput.id = 'authInput';
+        passwordInput.style.cssText = `
+          background: transparent; 
+          border: none; 
+          color: #00ff00; 
+          font-family: 'Courier New', monospace; 
+          font-size: 16px; 
+          text-shadow: 0 0 5px currentColor;
+          outline: none;
+          width: 200px;
+          border-bottom: 2px solid #00ff00;
+          padding: 5px;
+        `;
+        passwordInput.placeholder = '***';
+        
+        const cursor = document.createElement('span');
+        cursor.className = 'boot-cursor';
+        cursor.textContent = '_';
+        
+        inputContainer.appendChild(promptSymbol);
+        inputContainer.appendChild(passwordInput);
+        inputContainer.appendChild(cursor);
+        
+        const errorText = document.createElement('div');
+        errorText.className = 'boot-line error';
+        errorText.id = 'authError';
+        errorText.style.cssText = 'font-size: 14px; text-align: center; margin-top: 15px; display: none;';
+        errorText.textContent = 'ACCESS DENIED - INVALID AUTHORIZATION CODE';
+        
+        promptContainer.appendChild(promptText);
+        promptContainer.appendChild(instructionText);
+        promptContainer.appendChild(inputContainer);
+        promptContainer.appendChild(errorText);
+        
+        this.bootTextElement.appendChild(promptContainer);
+        
+        // Focus the input
+        setTimeout(() => passwordInput.focus(), 100);
+        
+        // Handle password submission
+        const handleSubmit = (e) => {
+          if (e.key === 'Enter') {
+            const password = passwordInput.value.trim().toUpperCase();
+            if (password === 'CEO') {
+              // Correct password - show access granted and proceed
+              this.showAccessGranted();
+            } else {
+              // Wrong password - show error
+              errorText.style.display = 'block';
+              passwordInput.value = '';
+              passwordInput.style.borderColor = '#ff3030';
+              
+              // Reset border color after 2 seconds
+              setTimeout(() => {
+                passwordInput.style.borderColor = '#00ff00';
+                errorText.style.display = 'none';
+              }, 2000);
+            }
+          }
+        };
+        
+        passwordInput.addEventListener('keydown', handleSubmit);
+      }
+      
+      showAccessGranted() {
+        this.bootTextElement.innerHTML = '';
+        
+        const accessContainer = document.createElement('div');
+        accessContainer.style.cssText = 'display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 15px;';
+        
+        const accessText = document.createElement('div');
+        accessText.className = 'boot-line success';
+        accessText.style.cssText = 'font-size: 20px; text-align: center; font-weight: bold;';
+        accessText.textContent = 'ACCESS GRANTED';
+        
+        const welcomeText = document.createElement('div');
+        welcomeText.className = 'ceo-text';
+        welcomeText.style.cssText = 'font-size: 16px; text-align: center; margin-top: 10px;';
+        welcomeText.textContent = 'Welcome, CEO';
+        
+        const loadingText = document.createElement('div');
+        loadingText.className = 'boot-line';
+        loadingText.style.cssText = 'font-size: 14px; text-align: center; margin-top: 20px;';
+        loadingText.textContent = 'Initializing BagOS...';
+        
+        accessContainer.appendChild(accessText);
+        accessContainer.appendChild(welcomeText);
+        accessContainer.appendChild(loadingText);
+        
+        this.bootTextElement.appendChild(accessContainer);
+        
+        // Complete boot after showing access granted message
         setTimeout(() => {
           this.config.onComplete();
-        }, this.config.logoDuration);
+        }, 2000);
       }
     }
 
