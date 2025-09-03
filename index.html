@@ -462,22 +462,9 @@
     }
 
     .crt-screen.powering-on {
-      animation: powerOn 1s ease-out forwards;
-    }
-
-    @keyframes powerOn {
-      0% {
-        opacity: 0;
-        transform: scale(1, 0.001);
-      }
-      50% {
-        opacity: 1;
-        transform: scale(1, 0.001);
-      }
-      100% {
-        opacity: 1;
-        transform: scale(1, 1);
-      }
+      /* Removed animation - screen appears immediately */
+      opacity: 1;
+      transform: scale(1, 1);
     }
 
     .static-noise {
