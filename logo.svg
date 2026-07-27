@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="440" viewBox="0 0 760 440">
+  <style>
+    .screen { transform-origin: 380px 220px; animation: poweron .55s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes poweron { 0% { transform: scaleY(.01); opacity: 0; } 55% { opacity: 1; } 100% { transform: scaleY(1); } }
+    .flicker { animation: flick 4s linear infinite; }
+    @keyframes flick { 0%,91%,94%,97%,100% { opacity: 1; } 92% { opacity: .75; } 95% { opacity: .88; } 98% { opacity: .95; } }
+    .pulse { animation: pulse 3s ease-in-out infinite alternate; }
+    @keyframes pulse { from { opacity: .30; } to { opacity: .85; } }
+    .drift { animation: drift 6s linear infinite; }
+    @keyframes drift { from { transform: translateY(0); } to { transform: translateY(4px); } }
+    .cur { animation: blink 1s steps(2, start) infinite; }
+    @keyframes blink { to { opacity: 0; } }
+    .t { opacity: 0; animation: type .01s steps(1) both; }
+    @keyframes type { to { opacity: 1; } }
+    .t1 { animation-delay: 1.0s; } .t2 { animation-delay: 1.15s; }
+    .t3 { animation-delay: 1.3s; } .t4 { animation-delay: 1.45s; }
+    .t5 { animation-delay: 1.6s; } .t6 { animation-delay: 1.75s; }
+    .t7 { animation-delay: 1.9s; }
+    text { font-family: 'Courier New', Courier, monospace; }
+  </style>
+  <defs>
+    <radialGradient id="bg" cx="30%" cy="22%" r="95%">
+      <stop offset="0%" stop-color="#1b2a6b"/>
+      <stop offset="55%" stop-color="#0b0f2a"/>
+      <stop offset="100%" stop-color="#060812"/>
+    </radialGradient>
+    <radialGradient id="vig" cx="50%" cy="50%" r="72%">
+      <stop offset="60%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity=".45"/>
+    </radialGradient>
+    <pattern id="scan" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="2" fill="#000000" opacity=".18"/>
+    </pattern>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="1.6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="blurBig" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="7"/>
+    </filter>
+    <clipPath id="round"><rect width="760" height="440" rx="14"/></clipPath>
+    <text id="art" font-size="13" xml:space="preserve"
+      ><tspan x="259" y="52">      .###*+.=</tspan
+      ><tspan x="259" dy="13">   .###=+*###.</tspan
+      ><tspan x="259" dy="13">  ####.     .####.</tspan
+      ><tspan x="259" dy="13"> ++++         ####.</tspan
+      ><tspan x="259" dy="13">.###           =###</tspan
+      ><tspan x="259" dy="13">####           +###</tspan
+      ><tspan x="259" dy="13">####           =###</tspan
+      ><tspan x="259" dy="13">####           +++.</tspan
+      ><tspan x="259" dy="13">####           .###</tspan
+      ><tspan x="259" dy="13">.##=           .###</tspan
+      ><tspan x="259" dy="13">               ####</tspan
+      ><tspan x="259" dy="13">               ++++</tspan
+      ><tspan x="259" dy="13">               ####</tspan
+      ><tspan x="259" dy="13">               ###=   .###***+</tspan
+      ><tspan x="259" dy="13">               ####    ####=###</tspan
+      ><tspan x="259" dy="13">               ####        ####+</tspan
+      ><tspan x="259" dy="13">               ####          *###</tspan
+      ><tspan x="259" dy="13">               ####           ####</tspan
+      ><tspan x="259" dy="13">               ####           ####</tspan
+      ><tspan x="259" dy="13">               ####*        +#####</tspan
+      ><tspan x="259" dy="13">                .####+     ####=.</tspan
+      ><tspan x="259" dy="13">                  ###########*</tspan
+      ><tspan x="259" dy="13">                    .#####+=</tspan
+    ></text>
+  </defs>
+
+  <g class="screen" clip-path="url(#round)">
+    <rect width="760" height="440" rx="14" fill="url(#bg)"/>
+    <g class="flicker">
+      <use href="#art" fill="#4da6ff" filter="url(#blurBig)" class="pulse"/>
+      <use href="#art" fill="#4da6ff" filter="url(#glow)"/>
+      <text x="380" y="400" font-size="30" font-weight="bold" fill="#00ff88"
+            filter="url(#glow)" text-anchor="middle" xml:space="preserve"
+        ><tspan class="t t1">n</tspan><tspan class="t t2">a</tspan><tspan class="t t3">t</tspan><tspan class="t t4">e</tspan><tspan class="t t5">b</tspan><tspan class="t t6">a</tspan><tspan class="t t7">g</tspan><tspan class="cur" fill="#00ff88">█</tspan></text>
+    </g>
+    <rect class="drift" x="0" y="-8" width="760" height="456" fill="url(#scan)"/>
+    <rect width="760" height="440" rx="14" fill="url(#vig)"/>
+    <rect x="1" y="1" width="758" height="438" rx="13" fill="none" stroke="#4da6ff" stroke-opacity=".3" stroke-width="1.5"/>
+  </g>
+</svg>
