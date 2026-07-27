@@ -1,19 +1,10 @@
-# Hey, I'm Nate 👋
+# natebag
 
-I reverse-engineer old games, build mods, and ship tools for the games I play.
+Reverse engineering, game mods, and tools.
 
-## 🔨 What I'm working on
+- [cog](https://github.com/the-cog-dev/cog) — AI-native IDE for orchestrating agents across any CLI
+- [Sims2DECOMP](https://github.com/natebag/Sims2DECOMP) — Sims 2 decompilation
+- [PumpPlaysRemaster](https://github.com/natebag/PumpPlaysRemaster) — chat plays the game
+- [TrenchTools](https://github.com/natebag/TrenchTools) — tooling
 
-- 🧠 **[The Cog](https://github.com/the-cog-dev/cog)** — AI-native IDE for orchestrating agents across any CLI
-- 🕹️ **[Sims2DECOMP](https://github.com/natebag/Sims2DECOMP)** — decompiling The Sims 2, one function at a time (C++)
-- 🎮 **[PumpPlaysRemaster](https://github.com/natebag/PumpPlaysRemaster)** — chat plays the game, rebuilt turbo style
-- 🧰 **[TrenchTools](https://github.com/natebag/TrenchTools)** — TypeScript tooling
-- 🤫 A multiplayer game project with the boys (soon™)
-
-## 🛠️ Stack
-
-`C++` · `TypeScript` · `Rust` · `Python` · `Unity / BepInEx modding`
-
-## 📊 Stats
-
-![Nate's GitHub stats](https://github-readme-stats.vercel.app/api?username=natebag&show_icons=true&theme=tokyonight&hide_border=true)
+C++ · TypeScript · Rust · Python
