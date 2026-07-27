@@ -1,10 +1,36 @@
-# natebag
+```
+BagOS v0.112 (alpha)
+booting...
 
-Reverse engineering, game mods, and tools.
+      .###*+.=
+   .###=+*###.
+  ####.     .####.
+ ++++         ####.
+.###           =###
+####           +###
+####           =###
+####           +++.
+####           .###
+.##=           .###
+               ####
+               ++++
+               ####
+               ###=   .###***+
+               ####    ####=###
+               ####        ####+
+               ####          *###
+               ####           ####
+               ####           ####
+               ####*        +#####
+                .####+     ####=.
+                  ###########*
+                    .#####+=
 
-- [cog](https://github.com/the-cog-dev/cog) — AI-native IDE for orchestrating agents across any CLI
-- [Sims2DECOMP](https://github.com/natebag/Sims2DECOMP) — Sims 2 decompilation
-- [PumpPlaysRemaster](https://github.com/natebag/PumpPlaysRemaster) — chat plays the game
-- [TrenchTools](https://github.com/natebag/TrenchTools) — tooling
+                        NATEBAG CEO
+                      TheBagBros © 2025
+                       VirtualFellas
 
-C++ · TypeScript · Rust · Python
+login: natebag_
+```
+
+[cog](https://github.com/the-cog-dev/cog) · [Sims2DECOMP](https://github.com/natebag/Sims2DECOMP) · [PumpPlaysRemaster](https://github.com/natebag/PumpPlaysRemaster) · [TrenchTools](https://github.com/natebag/TrenchTools)
